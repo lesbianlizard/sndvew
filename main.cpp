@@ -11,19 +11,31 @@
 #include <string.h>
 #include <math.h>
 
-#include <iostream>
-
-// #include "stb_image.h"
-
 #include <jack/jack.h>
+
+#include <complex.h>
+#include <fftw3.h>
+#define REAL 0
+#define IMAG 1
+
 
 typedef jack_default_audio_sample_t sample_t;
 
 namespace g {
 	jack_port_t*   input;
 	jack_client_t* client;
+
 	const int      buf_s = 1024;
-	sample_t      buf[buf_s];
+	sample_t       buf[buf_s];
+
+	namespace spec {
+	    const int      w = 1024;
+	    const int      h = (buf_s / 2 + 1);
+	    unsigned char  img[w][h];
+	    int            col = 0;
+	    fftwf_complex* out = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex) * h);
+	    fftwf_plan     plan = fftwf_plan_dft_r2c_1d(buf_s, buf, out, FFTW_ESTIMATE);
+	}
 }
 
 /**
@@ -47,18 +59,11 @@ process (jack_nframes_t nframes, void *arg)
 	}
 
 	
-	// for (int i=0; i<6; i++) {
-	// 	fprintf(stderr, "process: %i %i %d\n", nframes, copy_s, in[i]);
-	// }
-
 	memcpy (g::buf, in, copy_s);
-
-	// for (int i=0; i<6; i++) {
-	// 	fprintf(stderr, "process gbuf: %i %i %f\n", nframes, copy_s, g::buf[i]);
-	// }
 
 	return 0;      
 }
+
 
 /**
  * JACK calls this shutdown_callback if the server ever shuts down or
@@ -68,6 +73,22 @@ void
 jack_shutdown (void *arg)
 {
 	exit (1);
+}
+
+void update_spec() {
+    fftwf_execute(g::spec::plan);
+
+    for (int i=0; i<g::spec::h; i++) {
+	// printf("out[%d] = {%f, %fi}\n", i, g::spec::out[i][REAL], g::spec::out[i][IMAG]);
+	// printf("out[%d] = %i\n", i, int(abs(g::spec::out[i][REAL] * 16)));
+	// g::spec::img[g::spec::col][i] = int(abs(g::spec::out[i][REAL] * 64));
+	g::spec::img[g::spec::col][i] = 255;
+    }
+
+    g::spec::col++;
+    if (g::spec::col >= g::spec::w) {
+	g::spec::col = 0;
+    }
 }
 
 static const GLuint WIDTH = 800;
@@ -290,15 +311,21 @@ int main(int argc, char* argv[]) {
 
    /* --- */
 
+    int buf_s = g::spec::w*g::spec::h*3;
+    unsigned char buf[buf_s];
+    for (int i=0; i<buf_s; i++) {
+	buf[i]=0;
+    }
 
-	unsigned char buf[1025*3];
+
     while (!glfwWindowShouldClose(window)) {
-			for (int i=0; i<1024; i++) {
-				buf[3*i]=g::buf[i]*255;
-				buf[3*i+1]=g::buf[i]*255;
-				buf[3*i+2]=g::buf[i]*255;
-			}
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	update_spec();
+	for (int i=0; i<g::spec::w; i++) {
+		buf[3*i*g::spec::col]=g::spec::img[i][g::spec::col];
+		buf[3*i*g::spec::col+1]=g::spec::img[i][g::spec::col];
+		buf[3*i*g::spec::col+2]=g::spec::img[i][g::spec::col];
+	}
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, g::spec::w, g::spec::h, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
 
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT);
