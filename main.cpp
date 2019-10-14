@@ -86,11 +86,12 @@ static const GLchar* fragment_shader_source =
 	 "precision mediump float;\n"
 	 "uniform sampler2D audio_data;\n"
     "varying vec2 v_texCoord;\n"
+
     "void main() {\n"
     // "   gl_FragColor = vec4(v_texCoord, 1.0, 1.0);\n"
     "float d = max(texture2D(audio_data, v_texCoord), 0.0);\n"
     "if (v_texCoord.y > d) {\n"
-    "   gl_FragColor = vec4(1.0, .3, .1, 1.0) * d;\n"
+    "   gl_FragColor = vec4(1.0, .3, .1, 1.0);\n"
     "}\n"
     "else {\n"
     "   gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
