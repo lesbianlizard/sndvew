@@ -313,7 +313,7 @@ int main(int argc, char* argv[]) {
     unsigned char buf[g::spec::w*3][g::spec::h*3];
     for (int i=0; i<g::spec::w*3; i++) {
 	for (int j=0; j<g::spec::h*3; j++) {
-	    buf[i][j] = 4;
+	    buf[i][j] = 0;
 	}
     }
 
@@ -326,11 +326,11 @@ int main(int argc, char* argv[]) {
 		buf[j][3*i+1] = g::spec::img[j][i];
 		buf[j][3*i+2] = g::spec::img[j][i];
 
-		if (j==10 || j==50) {
-		    buf[j][3*i+0] = 255;
-		    buf[j][3*i+1] = 10;
-		    buf[j][3*i+2] = 120;
-		}
+		// if (j==10 || j==50) {
+		//     buf[j][3*i+0] = 255;
+		//     buf[j][3*i+1] = 10;
+		//     buf[j][3*i+2] = 120;
+		// }
 	    }
 	}
 
