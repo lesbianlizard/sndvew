@@ -81,8 +81,8 @@ void update_spec() {
     for (int i=0; i<g::spec::h; i++) {
 	// printf("out[%d] = {%f, %fi}\n", i, g::spec::out[i][REAL], g::spec::out[i][IMAG]);
 	// printf("out[%d] = %i\n", i, int(abs(g::spec::out[i][REAL] * 16)));
-	// g::spec::img[g::spec::col][i] = int(abs(g::spec::out[i][REAL] * 64));
-	g::spec::img[g::spec::col][i] = 255;
+	g::spec::img[i][g::spec::col] = int(abs(g::spec::out[i][REAL] * 64));
+	// g::spec::img[g::spec::col][i] = 255;
     }
 
     g::spec::col++;
@@ -305,27 +305,36 @@ int main(int argc, char* argv[]) {
    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
    glGenerateMipmap(GL_TEXTURE_2D);
 	GLint tex_u = glGetUniformLocation(shader_program, "audio_data");
-	fprintf(stderr, "%i\n", tex_u);
 	glUniform1i(tex_u, 0);
    // stbi_image_free(tex_data);
 
    /* --- */
 
-    int buf_s = g::spec::w*g::spec::h*3;
-    unsigned char buf[buf_s];
-    for (int i=0; i<buf_s; i++) {
-	buf[i]=0;
+    unsigned char buf[g::spec::w*3][g::spec::h*3];
+    for (int i=0; i<g::spec::w*3; i++) {
+	for (int j=0; j<g::spec::h*3; j++) {
+	    buf[i][j] = 4;
+	}
     }
 
 
     while (!glfwWindowShouldClose(window)) {
 	update_spec();
-	for (int i=0; i<g::spec::w; i++) {
-		buf[3*i*g::spec::col]=g::spec::img[i][g::spec::col];
-		buf[3*i*g::spec::col+1]=g::spec::img[i][g::spec::col];
-		buf[3*i*g::spec::col+2]=g::spec::img[i][g::spec::col];
+	for (int j=0; j<g::spec::h; j++) {
+	    for (int i=0; i<g::spec::w; i++) {
+		buf[j][3*i] = g::spec::img[j][i];
+		buf[j][3*i+1] = g::spec::img[j][i];
+		buf[j][3*i+2] = g::spec::img[j][i];
+
+		if (j==10 || j==50) {
+		    buf[j][3*i+0] = 255;
+		    buf[j][3*i+1] = 10;
+		    buf[j][3*i+2] = 120;
+		}
+	    }
 	}
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, g::spec::w, g::spec::h, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, g::spec::h, g::spec::w, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
 
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT);
