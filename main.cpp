@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define GLFW_INCLUDE_ES2
+#define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -233,8 +233,8 @@ int main(int argc, char* argv[]) {
 
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     window = glfwCreateWindow(WIDTH, HEIGHT, __FILE__, NULL, NULL);
     glfwMakeContextCurrent(window);
 
@@ -285,8 +285,8 @@ int main(int argc, char* argv[]) {
    glBindTexture(GL_TEXTURE_2D, texID);
    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
    // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
    glGenerateMipmap(GL_TEXTURE_2D);
@@ -298,14 +298,14 @@ int main(int argc, char* argv[]) {
    /* --- */
 
 
-	unsigned char buf[1025*3];
+    float buf[1025*3];
     while (!glfwWindowShouldClose(window)) {
 			for (int i=0; i<1024; i++) {
-				buf[3*i]=g::buf[i]*255;
-				buf[3*i+1]=g::buf[i]*255;
-				buf[3*i+2]=g::buf[i]*255;
+				buf[3*i]=g::buf[i];
+				buf[3*i+1]=g::buf[i];
+				buf[3*i+2]=g::buf[i];
 			}
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, 1024, 1, 0, GL_RED, GL_FLOAT, buf);
 
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT);
@@ -313,6 +313,7 @@ int main(int argc, char* argv[]) {
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glfwSwapBuffers(window);
     }
+
     glDeleteBuffers(1, &vbo);
     glfwTerminate();
 
