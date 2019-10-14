@@ -91,8 +91,8 @@ void update_spec() {
     }
 }
 
-static const GLuint WIDTH = 800;
-static const GLuint HEIGHT = 600;
+static const GLuint WIDTH = 1920;
+static const GLuint HEIGHT = 500;
 static const GLchar* vertex_shader_source =
     "#version 100\n"
     "attribute vec3 position;\n"
@@ -109,7 +109,7 @@ static const GLchar* fragment_shader_source =
     "varying vec2 v_texCoord;\n"
     "void main() {\n"
     // "   gl_FragColor = vec4(v_texCoord, 1.0, 1.0);\n"
-    "   gl_FragColor = vec4(texture2D(audio_data, v_texCoord));\n"
+    "   gl_FragColor = vec4(texture2D(audio_data, vec2(v_texCoord.x, v_texCoord.y/9.0) ).r * vec3(0.0, 0.5, 2.0), 1.0);\n"
     "}\n";
 
 GLint common_get_shader_program(const char *vertex_shader_source, const char *fragment_shader_source) {
