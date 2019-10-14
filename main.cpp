@@ -90,7 +90,7 @@ static const GLchar* fragment_shader_source =
     "void main() {\n"
     // "   gl_FragColor = vec4(v_texCoord, 1.0, 1.0);\n"
     "float d = max(texture2D(audio_data, v_texCoord).r, 0.0);\n"
-    "if (v_texCoord.y < d) {\n"
+    "if (v_texCoord.y < d && v_texCoord.y > d-.1) {\n"
     "   gl_FragColor = vec4(1.0, .3, .1, 1.0);\n"
     "}\n"
     "else {\n"
