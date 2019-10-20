@@ -1,5 +1,5 @@
-LIBS=-lglfw -lGLEW -lGL -ljack -lm -lfftw3f
-SRCS=main.cpp
+LIBS=-lglfw -lGLEW -lGL -ljack -lm -lfftw3
+SRCS=main.cpp spectrograph.cpp 
 
 sndvew: $(SRCS)
 	 g++ -ggdb -Wall $(LIBS) $(SRCS) -o sndvew

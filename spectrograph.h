@@ -1,6 +1,8 @@
 #ifndef SPECTROGRAPH_H
 #define SPECTROGRAPH_H
 
+#include <fftw3.h>
+
 // class Object {
 // 	public:
 //
@@ -8,25 +10,32 @@
 
 class Spectrograph {
 	public:
+		Spectrograph();
+		// ~Spectrograph();
 
 		void setSize(int width, int height);
 
-		void setup();
+		void setup(double*);
+		void update();
 		void draw();
 
 	protected:
-		Spectrograph();
-		~Spectrograph();
 
 		int width=0;
 		int height=0;
 
+		double* snd_buffer_ptr;
+
 		fftw_complex* fft_buffer;
 		fftw_plan fft_plan;
 
-		GLint shader;
+		GLuint shader;
+		GLuint vbo;
+		GLuint texture;
 
-		static const GLchar* vsh_source =
+		GLfloat vertices[30];
+	
+		static const constexpr GLchar* vsh_source =
 			"#version 100\n"
 			"attribute vec3 position;\n"
 			"attribute vec2 a_texCoord;\n"
@@ -36,7 +45,7 @@ class Spectrograph {
 			"   v_texCoord = a_texCoord;\n"
 			"}\n";
 
-		static const GLchar* fsh_source =
+		static const constexpr GLchar* fsh_source =
 			"#version 100\n"
 			"precision mediump float;\n"
 			"uniform sampler2D audio_data;\n"
