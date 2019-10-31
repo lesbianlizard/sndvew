@@ -13,7 +13,7 @@
 
 #include <jack/jack.h>
 
-#include <complex.h>
+// #include <complex.h>
 #include <fftw3.h>
 
 
@@ -27,7 +27,7 @@ namespace g {
 	jack_client_t* client;
 
 	const int      buf_s = 1024;
-	sample_t       buf[buf_s];
+	double	       buf[buf_s];
 
 	// namespace spec {
 	//     const int      w = 1024;
@@ -59,8 +59,10 @@ process (jack_nframes_t nframes, void *arg)
 		copy_s = sizeof(sample_t) * g::buf_s;
 	}
 
-	
-	memcpy (g::buf, in, copy_s);
+	// memcpy (g::buf, in, copy_s);
+	for (unsigned int i=0; i<nframes; i++) {
+		g::buf[i] = in[i];
+	}
 
 	return 0;      
 }
@@ -93,7 +95,7 @@ jack_shutdown (void *arg)
 // }
 //
 static const GLuint WIDTH = 1920;
-static const GLuint HEIGHT = 500;
+static const GLuint HEIGHT = 1080;
 // static const GLchar* vertex_shader_source =
 //     "#version 100\n"
 //     "attribute vec3 position;\n"
@@ -113,6 +115,11 @@ static const GLuint HEIGHT = 500;
 //     "   gl_FragColor = vec4(texture2D(audio_data, vec2(v_texCoord.x, v_texCoord.y) ).r * vec3(0.0, 0.5, 2.0), 1.0);\n"
 //     "}\n";
 
+
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+    glViewport(0, 0, width, height);
+}
 
 int main(int argc, char* argv[]) {
 
@@ -216,6 +223,8 @@ int main(int argc, char* argv[]) {
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glViewport(0, 0, WIDTH, HEIGHT);
+
+	 glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// GLfloat vertices[] = {
 	// 	-1.0f,  1.0f,  0.0f,   0.0f, 1.0f,
