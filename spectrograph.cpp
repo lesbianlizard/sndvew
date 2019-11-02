@@ -1,5 +1,6 @@
-#define GLFW_INCLUDE_ES2
+#define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
+
 #include "spectrograph.h"
 #include <complex.h>
 #include <fftw3.h>
@@ -7,6 +8,44 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
+
+void is_bad_problem() {
+    switch(glGetError()) {
+	break;
+	case GL_NO_ERROR:
+           fprintf(stderr, "No error has been recorded. The value of this symbolic constant is guaranteed to be 0.\n");
+
+	   break;
+	case GL_INVALID_ENUM:
+           fprintf(stderr, "An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other\n");
+           fprintf(stderr, "side effect than to set the error flag.\n");
+
+	   break;
+	case        GL_INVALID_VALUE:
+           fprintf(stderr, "A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the\n");
+           fprintf(stderr, "error flag.\n");
+
+	   break;
+	case        GL_INVALID_OPERATION:
+           fprintf(stderr, "The specified operation is not allowed in the current state. The offending command is ignored and has no other side\n");
+           fprintf(stderr, "effect than to set the error flag.\n");
+
+	   break;
+	case        GL_INVALID_FRAMEBUFFER_OPERATION:
+           fprintf(stderr, "The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set\n");
+           fprintf(stderr, "the error flag.\n");
+
+	   break;
+	case        GL_OUT_OF_MEMORY:
+           fprintf(stderr, "There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of\n");
+           fprintf(stderr, "the error flags, after this error is recorded.\n");
+
+	   break;
+
+	default:
+	   fprintf(stderr, "wtf even\n");
+    }
+}
 
 
 GLint compile_shader(const char* vertex_shader_source, const char* fragment_shader_source) {
@@ -121,7 +160,10 @@ void Spectrograph::setup(double* snd_buffer) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glGenerateMipmap(GL_TEXTURE_2D);
+	glUseProgram(this->shader);
+
+	// glGenerateMipmap(GL_TEXTURE_2D);
+
 	GLint tex_u = glGetUniformLocation(this->shader, "audio_data");
 	glUniform1i(tex_u, 0);
 
@@ -134,7 +176,7 @@ void Spectrograph::setup(double* snd_buffer) {
 	}
 	// g::spec::img[i][g::spec::col] = abs(g::spec::out[i][REAL]);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->width, this->height, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_UNSIGNED_BYTE, buf);
 
 	// GLfloat identityMatrix[] = {
 	//     1.0f, 0.0f, 0.0f, 0.0f,
@@ -142,8 +184,6 @@ void Spectrograph::setup(double* snd_buffer) {
 	//     0.0f, 0.0f, 1.0f, 0.0f,
 	//     0.0f, 0.0f, 0.0f, 1.0f,
 	// };
-
-	glUseProgram(this->shader);
 
 	// GLint modelAddr = glGetUniformLocation(this->shader, "model");
 	// glUniformMatrix4fv(modelAddr, 1, GL_FALSE, glm::value_ptr(this->transform));
@@ -174,15 +214,31 @@ void Spectrograph::update() {
 	// buf[i][0] = this->fft_buffer[i][1];
     // }
 
-    unsigned char buf[1][this->height*3];
-    for (int i=0; i<this->height; i++) {
-	for (int j=0; j<3; j++) {
-	    buf[0][(3*i)+j] = std::max(this->fft_buffer[i][0], 0.0) * 255;
+    // unsigned char buf[1][this->height*3];
+    // for (int i=0; i<this->height; i++) {
+	// for (int j=0; j<3; j++) {
+	//     buf[0][(3*i)+j] = std::max(this->fft_buffer[i][0], 0.0) * 255;
+	// }
+    // }
+
+    GLfloat buf[1][this->height*10];
+    for (int i=0; i<this->height*10; i++) {
+	if (i < current_col) {
+	    buf[0][i] = 255;
+	} else {
+	    buf[0][i] = 0;
 	}
+	// std::max(this->fft_buffer[i][0], 0.0) * 255;
     }
+    fprintf(stderr, "%i\n", current_col);
+
 
     glBindTexture(GL_TEXTURE_2D, this->texture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, current_col, 0, 1, this->height, GL_RGB, GL_UNSIGNED_BYTE, buf);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, current_col/2, 0, 1, this->height, GL_RED, GL_FLOAT, buf);
+    is_bad_problem();
+
+    // is_bad_problem();
+
 
     current_col+=1;
     if (current_col >= this->width) {
