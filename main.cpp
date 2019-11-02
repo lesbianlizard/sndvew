@@ -221,11 +221,11 @@ int main(int argc, char* argv[]) {
     window = glfwCreateWindow(WIDTH, HEIGHT, "sndvew", NULL, NULL);
     glfwMakeContextCurrent(window);
 
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK) {
-	fprintf(stderr, "Failed to initialize GLEW\n");
-	return -1;
-    }
+    // glewExperimental = GL_TRUE;
+    // if (glewInit() != GLEW_OK) {
+	// fprintf(stderr, "Failed to initialize GLEW\n");
+	// return -1;
+    // }
 
 
     printf("GL_VERSION  : %s\n", glGetString(GL_VERSION) );
