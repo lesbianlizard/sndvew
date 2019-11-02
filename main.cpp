@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define GLFW_INCLUDE_ES2
+#define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -55,9 +55,9 @@ process (jack_nframes_t nframes, void *arg)
 	
 	in = (sample_t*)(jack_port_get_buffer(g::input, nframes));
 
-	if (nframes > g::buf_s) {
-		copy_s = sizeof(sample_t) * g::buf_s;
-	}
+	// if (nframes > g::buf_s) {
+	// 	copy_s = sizeof(sample_t) * g::buf_s;
+	// }
 
 	// memcpy (g::buf, in, copy_s);
 	for (unsigned int i=0; i<nframes; i++) {
@@ -212,7 +212,7 @@ int main(int argc, char* argv[]) {
 
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     window = glfwCreateWindow(WIDTH, HEIGHT, "sndvew", NULL, NULL);
     glfwMakeContextCurrent(window);

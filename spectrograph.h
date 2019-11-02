@@ -72,6 +72,11 @@ class Spectrograph : public Graph {
 			"varying vec2 v_texCoord;\n"
 
 			"void main() {\n"
+			// "if (round(sin(v_texCoord.x*20.0f)) == 1.0f) {\n"
+			// "   gl_FragColor = vec4(1.0f);\n"
+			// "} else\n"
+			// "   gl_FragColor = vec4(0.0f);\n"
+			// "}\n"
 			// "   gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
 			"   gl_FragColor = vec4(texture2D(audio_data, v_texCoord).r);\n"
 			// "   gl_FragColor = vec4(v_texCoord.xy, 0.0f, 1.0f);\n"

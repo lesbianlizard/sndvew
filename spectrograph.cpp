@@ -55,9 +55,9 @@ GLint compile_shader(const char* vertex_shader_source, const char* fragment_shad
 
 Spectrograph::Spectrograph() {
 	this->width = 512;
-	this->height = 512;
+	this->height = 1024;
 
-	this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * 1024);
+	this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * 2048);
 }
 
 void Spectrograph::setSize(int x, int y) {
@@ -103,7 +103,7 @@ void Spectrograph::setup(double* snd_buffer) {
 	};
 	memcpy(this->vertices, vertices, sizeof(GLfloat)*30);
 
-	this->setSize(500, 500);
+	this->setSize(512, 512);
 
 	glGenBuffers(1, &this->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
@@ -177,7 +177,7 @@ void Spectrograph::update() {
     unsigned char buf[1][this->height*3];
     for (int i=0; i<this->height; i++) {
 	for (int j=0; j<3; j++) {
-	    buf[0][i+j] = std::max(this->fft_buffer[i][0], 0.0) * 255;
+	    buf[0][(3*i)+j] = std::max(this->fft_buffer[i][0], 0.0) * 255;
 	}
     }
 
