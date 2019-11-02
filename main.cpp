@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <GL/glew.h>
-// #define GLFW_INCLUDE_ES3
+#define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -213,8 +212,7 @@ int main(int argc, char* argv[]) {
 
     glfwInit();
 
-    // glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
