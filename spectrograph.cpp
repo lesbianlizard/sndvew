@@ -234,7 +234,7 @@ void Spectrograph::update() {
 
 
     glBindTexture(GL_TEXTURE_2D, this->texture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, current_col/2, 0, 1, this->height, GL_RED, GL_FLOAT, buf);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, current_col, 0, 1, this->height, GL_RED, GL_FLOAT, buf);
     is_bad_problem();
 
     // is_bad_problem();
