@@ -24,20 +24,20 @@
 
 typedef jack_default_audio_sample_t sample_t;
 namespace g {
-	jack_port_t*   input;
-	jack_client_t* client;
+    jack_port_t*   input;
+    jack_client_t* client;
 
-	const int      buf_s = 1024;
-	double	       buf[buf_s];
+    const int      buf_s = 1024;
+    double	       buf[buf_s];
 
-	// namespace spec {
-	//     const int      w = 1024;
-	//     const int      h = (buf_s / 2 + 1);
-	//     float img[w][h];
-	//     int            col = 0;
-	//     fftwf_complex* out = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex) * h);
-	//     fftwf_plan     plan = fftwf_plan_dft_r2c_1d(buf_s, buf, out, FFTW_ESTIMATE);
-	// }
+    // namespace spec {
+    //     const int      w = 1024;
+    //     const int      h = (buf_s / 2 + 1);
+    //     float img[w][h];
+    //     int            col = 0;
+    //     fftwf_complex* out = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex) * h);
+    //     fftwf_plan     plan = fftwf_plan_dft_r2c_1d(buf_s, buf, out, FFTW_ESTIMATE);
+    // }
 }
 
 /**
@@ -48,24 +48,24 @@ namespace g {
  * port to its output port. It will exit when stopped by 
  * the user (e.g. using Ctrl-C on a unix-ish operating system)
  */
-int
+    int
 process (jack_nframes_t nframes, void *arg)
 {
-	sample_t *in;
-	int copy_s = sizeof(sample_t) * nframes;
-	
-	in = (sample_t*)(jack_port_get_buffer(g::input, nframes));
+    sample_t *in;
+    int copy_s = sizeof(sample_t) * nframes;
 
-	// if (nframes > g::buf_s) {
-	// 	copy_s = sizeof(sample_t) * g::buf_s;
-	// }
+    in = (sample_t*)(jack_port_get_buffer(g::input, nframes));
 
-	// memcpy (g::buf, in, copy_s);
-	for (unsigned int i=0; i<nframes; i++) {
-		g::buf[i] = in[i];
-	}
+    // if (nframes > g::buf_s) {
+    // 	copy_s = sizeof(sample_t) * g::buf_s;
+    // }
 
-	return 0;      
+    // memcpy (g::buf, in, copy_s);
+    for (unsigned int i=0; i<nframes; i++) {
+	g::buf[i] = in[i];
+    }
+
+    return 0;      
 }
 
 
@@ -73,10 +73,10 @@ process (jack_nframes_t nframes, void *arg)
  * JACK calls this shutdown_callback if the server ever shuts down or
  * decides to disconnect the client.
  */
-void
+    void
 jack_shutdown (void *arg)
 {
-	exit (1);
+    exit (1);
 }
 
 // void update_spec() {
@@ -124,88 +124,92 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 int main(int argc, char* argv[]) {
 
-	const char **ports;
-	const char *client_name = "sndvew";
-	const char *server_name = NULL;
-	jack_options_t options = JackNullOption;
-	jack_status_t status;
-	
-	/* open a client connection to the JACK server */
+    AudioBuffer ab;
 
-	g::client = jack_client_open (client_name, options, &status, server_name);
-	if (g::client == NULL) {
-		fprintf (stderr, "jack_client_open() failed, "
-			 "status = 0x%2.0x\n", status);
-		if (status & JackServerFailed) {
-			fprintf (stderr, "Unable to connect to JACK server\n");
-		}
-		exit (1);
+    exit(1);
+
+    const char **ports;
+    const char *client_name = "sndvew";
+    const char *server_name = NULL;
+    jack_options_t options = JackNullOption;
+    jack_status_t status;
+
+    /* open a client connection to the JACK server */
+
+    g::client = jack_client_open (client_name, options, &status, server_name);
+    if (g::client == NULL) {
+	fprintf (stderr, "jack_client_open() failed, "
+		"status = 0x%2.0x\n", status);
+	if (status & JackServerFailed) {
+	    fprintf (stderr, "Unable to connect to JACK server\n");
 	}
-	if (status & JackServerStarted) {
-		fprintf (stderr, "JACK server started\n");
-	}
-	if (status & JackNameNotUnique) {
-		client_name = jack_get_client_name(g::client);
-		fprintf (stderr, "unique name `%s' assigned\n", client_name);
-	}
+	exit (1);
+    }
+    if (status & JackServerStarted) {
+	fprintf (stderr, "JACK server started\n");
+    }
+    if (status & JackNameNotUnique) {
+	client_name = jack_get_client_name(g::client);
+	fprintf (stderr, "unique name `%s' assigned\n", client_name);
+    }
 
-	/* tell the JACK server to call `process()' whenever
-	   there is work to be done.
-	*/
+    /* tell the JACK server to call `process()' whenever
+       there is work to be done.
+       */
 
-	jack_set_process_callback (g::client, process, 0);
+    jack_set_process_callback (g::client, process, 0);
 
-	/* tell the JACK server to call `jack_shutdown()' if
-	   it ever shuts down, either entirely, or if it
-	   just decides to stop calling us.
-	*/
+    /* tell the JACK server to call `jack_shutdown()' if
+       it ever shuts down, either entirely, or if it
+       just decides to stop calling us.
+       */
 
-	jack_on_shutdown (g::client, jack_shutdown, 0);
+    jack_on_shutdown (g::client, jack_shutdown, 0);
 
-	/* display the current sample rate. 
-	 */
+    /* display the current sample rate. 
+    */
 
-	printf ("engine sample rate: %" PRIu32 "\n",
-		jack_get_sample_rate (g::client));
+    printf ("engine sample rate: %" PRIu32 "\n",
+	    jack_get_sample_rate (g::client));
 
-	/* create input port */
-	g::input = jack_port_register (g::client, "input",
-					 JACK_DEFAULT_AUDIO_TYPE,
-					 JackPortIsInput, 0);
+    /* create input port */
+    g::input = jack_port_register (g::client, "input",
+	    JACK_DEFAULT_AUDIO_TYPE,
+	    JackPortIsInput, 0);
 
-	if ((g::input == NULL)) {
-		fprintf(stderr, "no more JACK ports available\n");
-		exit (1);
-	}
+    if ((g::input == NULL)) {
+	fprintf(stderr, "no more JACK ports available\n");
+	exit (1);
+    }
 
-	/* Tell the JACK server that we are ready to roll.  Our
-	 * process() callback will start running now. */
+    /* Tell the JACK server that we are ready to roll.  Our
+     * process() callback will start running now. */
 
-	if (jack_activate (g::client)) {
-		fprintf (stderr, "cannot activate client");
-		exit (1);
-	}
+    if (jack_activate (g::client)) {
+	fprintf (stderr, "cannot activate client");
+	exit (1);
+    }
 
 
-	/* Connect the ports.  You can't do this before the client is
-	 * activated, because we can't make connections to clients
-	 * that aren't running.  Note the confusing (but necessary)
-	 * orientation of the driver backend ports: playback ports are
-	 * "input" to the backend, and capture ports are "output" from
-	 * it.
-	 */
-	ports = jack_get_ports (g::client, NULL, NULL,
-				JackPortIsPhysical|JackPortIsOutput);
-	if (ports == NULL) {
-		fprintf(stderr, "no physical capture ports\n");
-		exit (1);
-	}
+    /* Connect the ports.  You can't do this before the client is
+     * activated, because we can't make connections to clients
+     * that aren't running.  Note the confusing (but necessary)
+     * orientation of the driver backend ports: playback ports are
+     * "input" to the backend, and capture ports are "output" from
+     * it.
+     */
+    ports = jack_get_ports (g::client, NULL, NULL,
+	    JackPortIsPhysical|JackPortIsOutput);
+    if (ports == NULL) {
+	fprintf(stderr, "no physical capture ports\n");
+	exit (1);
+    }
 
-	if (jack_connect (g::client, ports[0], jack_port_name (g::input))) {
-		fprintf (stderr, "cannot connect input ports\n");
-	}
+    if (jack_connect (g::client, ports[0], jack_port_name (g::input))) {
+	fprintf (stderr, "cannot connect input ports\n");
+    }
 
-	free (ports);
+    free (ports);
 
 
     // GLuint shader_program, vbo;
@@ -220,13 +224,6 @@ int main(int argc, char* argv[]) {
     window = glfwCreateWindow(WIDTH, HEIGHT, "sndvew", NULL, NULL);
     glfwMakeContextCurrent(window);
 
-    // glewExperimental = GL_TRUE;
-    // if (glewInit() != GLEW_OK) {
-	// fprintf(stderr, "Failed to initialize GLEW\n");
-	// return -1;
-    // }
-
-
     printf("GL_VERSION  : %s\n", glGetString(GL_VERSION) );
     printf("GL_RENDERER : %s\n", glGetString(GL_RENDERER) );
 
@@ -234,100 +231,24 @@ int main(int argc, char* argv[]) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glViewport(0, 0, WIDTH, HEIGHT);
 
-	 glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	// GLfloat vertices[] = {
-	// 	-1.0f,  1.0f,  0.0f,   0.0f, 1.0f,
-	// 	1.0f,  -1.0f,  0.0f,   1.0f, 0.0f,
-	// 	-1.0f, -1.0f,  0.0f,   0.0f, 0.0f,
-        //
-	// 	-1.0f,  1.0f,  0.0f,   0.0f, 1.0f,
-	// 	1.0f,   1.0f,  0.0f,   1.0f, 1.0f,
-	// 	1.0f,  -1.0f,  0.0f,   1.0f, 0.0f,
-	// };
-
-    // glGenBuffers(1, &vbo);
-    // glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    //
-    // shader_program = compile_shader(vertex_shader_source, fragment_shader_source);
-    // GLint pos = glGetAttribLocation(shader_program, "position");
-    // GLint tex_pos = glGetAttribLocation(shader_program, "a_texCoord");
-    //
-    // glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (GLvoid*)0);
-    // glVertexAttribPointer(tex_pos, 2, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (GLvoid*)(3*sizeof(GLfloat)));
-    //
-    // glEnableVertexAttribArray(pos);
-    // glEnableVertexAttribArray(tex_pos);
-    //
-    // glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-
-	 /* --- texture --- */
-
-   // int tex_w, tex_h, tex_channels;
-   // unsigned char *tex_data = stbi_load("tex.jpg", &tex_w, &tex_h, &tex_channels, 0);
-   // if (!tex_data) {
-   //   std::cerr << "Failed to load image texture" << std::endl;
-   // }
-
-   // GLuint texID;
-   // glGenTextures(1, &texID);
-   // glBindTexture(GL_TEXTURE_2D, texID);
-   // // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   // // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-   //
-   // // glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
-   // glGenerateMipmap(GL_TEXTURE_2D);
-	// GLint tex_u = glGetUniformLocation(shader_program, "audio_data");
-	// glUniform1i(tex_u, 0);
-   // // stbi_image_free(tex_data);
-
-   /* --- */
-
-    // unsigned char buf[g::spec::w*3][g::spec::h*3];
-    // for (int i=0; i<g::spec::w*3; i++) {
-	// for (int j=0; j<g::spec::h*3; j++) {
-	//     buf[i][j] = 0;
-	// }
-    // }
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     Spectrograph spectro;
     spectro.setup(g::buf);
 
     while (!glfwWindowShouldClose(window)) {
-	// update_spec();
-	// for (int j=0; j<g::spec::h; j++) {
-	//     for (int i=0; i<g::spec::w; i++) {
-	// 	unsigned char val = g::spec::img[j][i] * 64;
-	// 	buf[j][3*i] = val;
-	// 	buf[j][3*i+1] = val;
-	// 	buf[j][3*i+2] = val;
-        //
-	// 	// if (j==10 || j==50) {
-	// 	//     buf[j][3*i+0] = 255;
-	// 	//     buf[j][3*i+1] = 10;
-	// 	//     buf[j][3*i+2] = 120;
-	// 	// }
-	//     }
-	// }
-        //
-	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, g::spec::h, g::spec::w, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
-	spectro.update();
+	glClear(GL_COLOR_BUFFER_BIT);
+	glfwPollEvents();
 
-        glfwPollEvents();
-        glClear(GL_COLOR_BUFFER_BIT);
-        // glUseProgram(shader_program);
-        // glDrawArrays(GL_TRIANGLES, 0, 6);
+	spectro.update();
 	spectro.draw();
-        glfwSwapBuffers(window);
+
+	glfwSwapBuffers(window);
     }
 
     // glDeleteBuffers(1, &vbo);
     glfwTerminate();
 
-	jack_client_close (g::client);
-	return EXIT_SUCCESS;
+    jack_client_close (g::client);
+    return EXIT_SUCCESS;
 }
