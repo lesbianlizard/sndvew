@@ -96,7 +96,9 @@ Spectrograph::Spectrograph() {
 	this->width = 512;
 	this->height = 1024;
 
-	this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * 2048);
+	this->fft_samples = 1024;
+
+	this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
 }
 
 void Spectrograph::setSize(int x, int y) {
@@ -115,7 +117,7 @@ void Spectrograph::setSize(int x, int y) {
 void Spectrograph::setup(double* snd_buffer) {
 
 	this->snd_buffer_ptr = snd_buffer;
-	this->fft_plan = fftw_plan_dft_r2c_1d(1024, this->snd_buffer_ptr, this->fft_buffer, FFTW_ESTIMATE);
+	this->fft_plan = fftw_plan_dft_r2c_1d(this->fft_samples, this->snd_buffer_ptr, this->fft_buffer, FFTW_ESTIMATE);
 
 	this->shader = compile_shader(this->vsh_source, this->fsh_source);
 	GLint pos = glGetAttribLocation(this->shader, "position");
@@ -172,28 +174,15 @@ void Spectrograph::setup(double* snd_buffer) {
 	// GLfloat buf[this->width][this->height];
 	for (int i=0; i<this->width; i++) {
 	    for (int j=0; j<this->height; j++) {
-			texturebuf[i + j*width] = 0.50f;
+			texturebuf[i + j*width] = 0.00f;
 		}
-		// buf[i][0] = this->fft_buffer[i][1];
 	}
-	// g::spec::img[i][g::spec::col] = abs(g::spec::out[i][REAL]);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
 
-	// GLfloat identityMatrix[] = {
-	//     1.0f, 0.0f, 0.0f, 0.0f,
-	//     0.0f, 1.0f, 0.0f, 0.0f,
-	//     0.0f, 0.0f, 1.0f, 0.0f,
-	//     0.0f, 0.0f, 0.0f, 1.0f,
-	// };
-
-	// GLint modelAddr = glGetUniformLocation(this->shader, "model");
-	// glUniformMatrix4fv(modelAddr, 1, GL_FALSE, glm::value_ptr(this->transform));
 
 	glm::mat4 view          = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         glm::mat4 projection    = glm::mat4(1.0f);
-	// projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-        // projection = glm::perspective(0.1f, 1920.0f / 540.0f, 0.1f, 100.0f);
 	projection = glm::ortho(0.0f, 1920.0f, 1080.0f, 0.0f, 0.1f, 100.0f);
         view       = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
@@ -203,62 +192,39 @@ void Spectrograph::setup(double* snd_buffer) {
 	GLint projAddr = glGetUniformLocation(this->shader, "proj");
 	glUniformMatrix4fv(projAddr, 1, GL_FALSE, glm::value_ptr(projection));
 
+	GLint xoffsetAddr = glGetUniformLocation(this->shader, "x_offset");
+	glUniform1f(xoffsetAddr, 0.0f);
+
 }
 
 void Spectrograph::update() {
     fftw_execute(this->fft_plan);
 
-    // unsigned char buf[this->width*3][this->height];
-    // for (int i=0; i<this->width*3; i++) {
-	// for (int j=0; j<this->height; j++) {
-	//     buf[i][j] = 1;
-	// }
-	// buf[i][0] = this->fft_buffer[i][1];
-    // }
-
-    // unsigned char buf[1][this->height*3];
-    // for (int i=0; i<this->height; i++) {
-	// for (int j=0; j<3; j++) {
-	//     buf[0][(3*i)+j] = std::max(this->fft_buffer[i][0], 0.0) * 255;
-	// }
-    // }
-
-    // GLfloat* buf = (GLfloat*) malloc(this->width * this->height * sizeof(GLfloat));
-    // // GLfloat [this->height*this->width];
-    // for (int i=0; i<this->height; i++) {
-	// for (int j=0; j<1; j++) {
-	//     buf[j + i*width] = 5.0;
-	// }
-	// // std::max(this->fft_buffer[i][0], 0.0) * 255;
-    // }
-    // fprintf(stderr, "%i\n", current_col);
-
     for (int j=0; j<this->height; j++) {
 	texturebuf[current_col + j*width] = this->fft_buffer[j][1];
     }
 
+    glUseProgram(this->shader);
     glBindTexture(GL_TEXTURE_2D, this->texture);
     // glTexSubImage2D(GL_TEXTURE_2D, 0, current_col, 0, 1, this->height, GL_RED, GL_FLOAT, texturebuf);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
-    // is_bad_problem();
+
+    GLint xoffsetAddr = glGetUniformLocation(this->shader, "x_offset");
+    fprintf(stderr, "%f\n", (float)(current_col)/width);
+    glUniform1f(xoffsetAddr, (float)(current_col)/width);
+    is_bad_problem();
 
     current_col+=1;
     if (current_col >= this->width) {
 	current_col = 0;
     }
 
-    // for (int i=0; i<g::spec::h; i++) {
-		 // g::spec::img[i][g::spec::col] = abs(g::spec::out[i][REAL]);
-    // }
 }
 
 void Spectrograph::draw() {
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
 	glBindTexture(GL_TEXTURE_2D, this->texture);
 	glUseProgram(this->shader);
-
-	// GLint wtfAddr = glGetUniformLocation(this->shader, "wtf");
-	// glUniform1f(wtfAddr, 1.0f);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }

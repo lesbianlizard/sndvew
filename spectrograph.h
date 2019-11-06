@@ -40,6 +40,7 @@ class Spectrograph : public Graph {
 
 		fftw_complex* fft_buffer;
 		fftw_plan fft_plan;
+		int fft_samples;
 
 		GLuint shader;
 		GLuint vbo;
@@ -70,6 +71,8 @@ class Spectrograph : public Graph {
 			"#version 100\n"
 			"precision mediump float;\n"
 
+			"uniform float x_offset;\n"
+
 			"uniform sampler2D audio_data;\n"
 			"varying vec2 v_texCoord;\n"
 
@@ -80,8 +83,9 @@ class Spectrograph : public Graph {
 			// "   gl_FragColor = vec4(0.0f);\n"
 			// "}\n"
 			// "   gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
-			"   gl_FragColor = vec4(texture2D(audio_data, v_texCoord).r);\n"
+			"   gl_FragColor = vec4(texture2D(audio_data, vec2(v_texCoord.x + x_offset, v_texCoord.y/2.0f)).r*.1f);\n"
 			// "   gl_FragColor = vec4(v_texCoord.xy, 0.0f, 1.0f);\n"
+			// "   gl_FragColor = vec4(vec3(x_offset), 1.0f);\n"
 			"}\n";
 
 };
