@@ -45,6 +45,8 @@ class Spectrograph : public Graph {
 		GLuint vbo;
 		GLuint texture;
 
+		GLfloat* texturebuf;
+
 		GLfloat vertices[30];
 	
 		static const constexpr GLchar* vsh_source =

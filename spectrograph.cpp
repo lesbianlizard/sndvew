@@ -162,21 +162,23 @@ void Spectrograph::setup(double* snd_buffer) {
 
 	glUseProgram(this->shader);
 
-	// glGenerateMipmap(GL_TEXTURE_2D);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	GLint tex_u = glGetUniformLocation(this->shader, "audio_data");
 	glUniform1i(tex_u, 0);
 
-	unsigned char buf[this->width*3][this->height];
-	for (int i=0; i<this->width*3; i++) {
+	texturebuf = new GLfloat[this->width * this->height];
+
+	// GLfloat buf[this->width][this->height];
+	for (int i=0; i<this->width; i++) {
 	    for (int j=0; j<this->height; j++) {
-			buf[i][j] = 50;
+			texturebuf[i + j*width] = 0.50f;
 		}
-		buf[i][0] = this->fft_buffer[i][1];
+		// buf[i][0] = this->fft_buffer[i][1];
 	}
 	// g::spec::img[i][g::spec::col] = abs(g::spec::out[i][REAL]);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_UNSIGNED_BYTE, buf);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
 
 	// GLfloat identityMatrix[] = {
 	//     1.0f, 0.0f, 0.0f, 0.0f,
@@ -221,24 +223,24 @@ void Spectrograph::update() {
 	// }
     // }
 
-    GLfloat buf[1][this->height*10];
-    for (int i=0; i<this->height*10; i++) {
-	if (i < current_col) {
-	    buf[0][i] = 255;
-	} else {
-	    buf[0][i] = 0;
-	}
-	// std::max(this->fft_buffer[i][0], 0.0) * 255;
-    }
-    fprintf(stderr, "%i\n", current_col);
+    // GLfloat* buf = (GLfloat*) malloc(this->width * this->height * sizeof(GLfloat));
+    // // GLfloat [this->height*this->width];
+    // for (int i=0; i<this->height; i++) {
+	// for (int j=0; j<1; j++) {
+	//     buf[j + i*width] = 5.0;
+	// }
+	// // std::max(this->fft_buffer[i][0], 0.0) * 255;
+    // }
+    // fprintf(stderr, "%i\n", current_col);
 
+    for (int j=0; j<this->height; j++) {
+	texturebuf[current_col + j*width] = this->fft_buffer[j][1];
+    }
 
     glBindTexture(GL_TEXTURE_2D, this->texture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, current_col, 0, 1, this->height, GL_RED, GL_FLOAT, buf);
-    is_bad_problem();
-
+    // glTexSubImage2D(GL_TEXTURE_2D, 0, current_col, 0, 1, this->height, GL_RED, GL_FLOAT, texturebuf);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
     // is_bad_problem();
-
 
     current_col+=1;
     if (current_col >= this->width) {
