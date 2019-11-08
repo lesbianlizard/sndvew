@@ -1,6 +1,6 @@
 LIBS=-lglfw -lGLEW -lGL -ljack -lm -lfftw3
-SRCS=main.cpp spectrograph.cpp 
-HEADERS=spectrograph.h
+SRCS=spectrograph.cpp audio_buffer.cpp main.cpp
+HEADERS=spectrograph.h audio_buffer.h
 
 sndvew: $(SRCS) $(HEADERS)
 	 g++ -ggdb -Wall $(LIBS) $(SRCS) -o sndvew

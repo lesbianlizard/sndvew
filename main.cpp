@@ -4,7 +4,6 @@
 #define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
 
-
 #include <stdio.h>
 #include <errno.h>
 #include <unistd.h>
@@ -18,11 +17,11 @@
 #include <fftw3.h>
 
 
+#include "typedefs.h"
 #include "spectrograph.h"
-#define REAL 0
-#define IMAG 1
+#include "audio_buffer.h"
 
-typedef jack_default_audio_sample_t sample_t;
+
 namespace g {
     jack_port_t*   input;
     jack_client_t* client;
@@ -52,7 +51,7 @@ namespace g {
 process (jack_nframes_t nframes, void *arg)
 {
     sample_t *in;
-    int copy_s = sizeof(sample_t) * nframes;
+    // int copy_s = sizeof(sample_t) * nframes;
 
     in = (sample_t*)(jack_port_get_buffer(g::input, nframes));
 
@@ -124,9 +123,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 int main(int argc, char* argv[]) {
 
-    AudioBuffer ab;
-
-    exit(1);
+    // AudioBuffer ab(1024);
+    // int head = ab.addAccessor();
+    // int head2 = ab.addAccessor();
+    // exit(1);
 
     const char **ports;
     const char *client_name = "sndvew";
