@@ -83,7 +83,7 @@ class Spectrograph : public Graph {
 			// "   gl_FragColor = vec4(0.0f);\n"
 			// "}\n"
 			// "   gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
-			"   gl_FragColor = vec4(texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0f))).r*.1f);\n"
+			"   gl_FragColor = vec4(texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0))).r*.1);\n"
 			// "   gl_FragColor = vec4(v_texCoord.xy, 0.0f, 1.0f);\n"
 			// "   gl_FragColor = vec4(vec3(x_offset), 1.0f);\n"
 			"}\n";
