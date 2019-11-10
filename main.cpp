@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define GLFW_INCLUDE_ES3
+#include <GL/glew.h>
+//#define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -217,12 +218,18 @@ int main(int argc, char* argv[]) {
 
     glfwInit();
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    // glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    //glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
     window = glfwCreateWindow(WIDTH, HEIGHT, "sndvew", NULL, NULL);
     glfwMakeContextCurrent(window);
+
+    if (glewInit() != GLEW_OK) {
+	fprintf(stderr, "Failed to initialize GLEW");
+	return -1;
+    }
+
 
     printf("GL_VERSION  : %s\n", glGetString(GL_VERSION) );
     printf("GL_RENDERER : %s\n", glGetString(GL_RENDERER) );

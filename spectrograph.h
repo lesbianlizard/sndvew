@@ -51,8 +51,8 @@ class Spectrograph : public Graph {
 		GLfloat vertices[30];
 	
 		static const constexpr GLchar* vsh_source =
-			"#version 100\n"
-			"precision mediump float;\n"
+			"#version 120\n"
+			"//precision mediump float;\n"
 			// "uniform mat4 model;\n"
 			"uniform mat4 proj;\n"
 			"uniform mat4 view;\n"
@@ -68,8 +68,8 @@ class Spectrograph : public Graph {
 			"}\n";
 
 		static const constexpr GLchar* fsh_source =
-			"#version 100\n"
-			"precision mediump float;\n"
+			"#version 120\n"
+			"//precision mediump float;\n"
 
 			"uniform float x_offset;\n"
 
@@ -78,12 +78,12 @@ class Spectrograph : public Graph {
 
 			"void main() {\n"
 			// "if (round(sin(v_texCoord.x*20.0f)) == 1.0f) {\n"
-			// "   gl_FragColor = vec4(1.0f);\n"
+			"   gl_FragColor = vec4(1.0f);\n"
 			// "} else\n"
 			// "   gl_FragColor = vec4(0.0f);\n"
 			// "}\n"
 			// "   gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
-			"   gl_FragColor = vec4(texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0))).r*.1);\n"
+			 "   gl_FragColor = vec4(texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0))).r*.1);\n"
 			// "   gl_FragColor = vec4(v_texCoord.xy, 0.0f, 1.0f);\n"
 			// "   gl_FragColor = vec4(vec3(x_offset), 1.0f);\n"
 			"}\n";

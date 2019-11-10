@@ -1,4 +1,5 @@
-#define GLFW_INCLUDE_ES3
+#include <GL/glew.h>
+//#define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
 
 #include "spectrograph.h"
@@ -151,7 +152,9 @@ void Spectrograph::setup(double* snd_buffer) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(this->vertices), this->vertices, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (GLvoid*)0);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
 	glVertexAttribPointer(tex_pos, 2, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (GLvoid*)(3*sizeof(GLfloat)));
+	is_bad_problem();
 	glEnableVertexAttribArray(pos);
 	glEnableVertexAttribArray(tex_pos);
 
@@ -210,9 +213,9 @@ void Spectrograph::update() {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
 
     GLint xoffsetAddr = glGetUniformLocation(this->shader, "x_offset");
-    fprintf(stderr, "%f\n", (float)(current_col)/width);
+    //fprintf(stderr, "%f\n", (float)(current_col)/width);
     glUniform1f(xoffsetAddr, (float)(current_col)/width);
-    is_bad_problem();
+    //is_bad_problem();
 
     current_col+=1;
     if (current_col >= this->width) {
