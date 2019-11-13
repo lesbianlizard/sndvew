@@ -26,7 +26,7 @@ class Spectrograph : public Graph {
 
 		void setSize(int width, int height);
 
-		void setup(double*);
+		void setup(double*, const char*);
 		void update();
 		void draw();
 
@@ -47,6 +47,8 @@ class Spectrograph : public Graph {
 		GLuint texture;
 
 		GLfloat* texturebuf;
+
+		GLuint gradient_tex;
 
 		GLfloat vertices[30];
 	
@@ -74,6 +76,7 @@ class Spectrograph : public Graph {
 			"uniform float x_offset;\n"
 
 			"uniform sampler2D audio_data;\n"
+			"uniform sampler2D gradient;\n"
 			"varying vec2 v_texCoord;\n"
 
 			"void main() {\n"
@@ -82,10 +85,10 @@ class Spectrograph : public Graph {
 			// "} else\n"
 			// "   gl_FragColor = vec4(0.0f);\n"
 			// "}\n"
-			// "   gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n"
-			 "   gl_FragColor = vec4(texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0))).r*.1);\n"
-			// "   gl_FragColor = vec4(v_texCoord.xy, 0.0f, 1.0f);\n"
-			// "   gl_FragColor = vec4(vec3(x_offset), 1.0f);\n"
+			// "   gl_FragColor = vec4(v_texCoord, 1.0, 1.0);\n"
+			"	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0))).r;\n"
+			"  gl_FragColor = vec4(texture2D(gradient, vec2(.1 + ampl, 1.0)));\n"
+			// "  gl_FragColor = vec4(vec3(ampl), 1.0);\n"
 			"}\n";
 
 };

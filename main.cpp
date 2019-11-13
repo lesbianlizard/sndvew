@@ -241,7 +241,7 @@ int main(int argc, char* argv[]) {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     Spectrograph spectro;
-    spectro.setup(g::buf);
+    spectro.setup(g::buf, "gradient.png");
 
     while (!glfwWindowShouldClose(window)) {
 	glClear(GL_COLOR_BUFFER_BIT);

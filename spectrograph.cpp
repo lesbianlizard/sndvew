@@ -2,6 +2,7 @@
 //#define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
 
+#include "stb_image.h"
 #include "spectrograph.h"
 #include <complex.h>
 #include <fftw3.h>
@@ -115,7 +116,8 @@ void Spectrograph::setSize(int x, int y) {
     this->vertices[25] = this->size[0];
 }
 
-void Spectrograph::setup(double* snd_buffer) {
+void Spectrograph::setup(double* snd_buffer, const char* gradient_filename) {
+
 
 	this->snd_buffer_ptr = snd_buffer;
 	this->fft_plan = fftw_plan_dft_r2c_1d(this->fft_samples, this->snd_buffer_ptr, this->fft_buffer, FFTW_ESTIMATE);
@@ -154,23 +156,53 @@ void Spectrograph::setup(double* snd_buffer) {
 	glVertexAttribPointer(pos, 3, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (GLvoid*)0);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
 	glVertexAttribPointer(tex_pos, 2, GL_FLOAT, GL_FALSE, 5*sizeof(GLfloat), (GLvoid*)(3*sizeof(GLfloat)));
-	is_bad_problem();
 	glEnableVertexAttribArray(pos);
 	glEnableVertexAttribArray(tex_pos);
 
+	
+	
 	glGenTextures(1, &this->texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glBindTexture(GL_TEXTURE_2D, this->texture);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+
+	glGenTextures(1, &this->gradient_tex);
+	glBindTexture(GL_TEXTURE_2D, this->gradient_tex);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	int tex_w, tex_h, tex_channels;
+	unsigned char* tex_data = stbi_load("gradient.png", &tex_w, &tex_h, &tex_channels, 0);
+	if (!tex_data) {
+	    fprintf(stderr, "Failed to load image texture %s\n", gradient_filename);
+	}
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
+	// stbi_image_free(tex_data);
+
+
+	is_bad_problem();
+
 	glUseProgram(this->shader);
 
-	glGenerateMipmap(GL_TEXTURE_2D);
+	GLuint tex_u;
 
-	GLint tex_u = glGetUniformLocation(this->shader, "audio_data");
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->gradient_tex);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, this->texture);
+
+	tex_u = glGetUniformLocation(this->shader, "gradient");
 	glUniform1i(tex_u, 0);
+
+	tex_u = glGetUniformLocation(this->shader, "audio_data");
+	glUniform1i(tex_u, 1);
 
 	texturebuf = new GLfloat[this->width * this->height];
 
@@ -181,7 +213,7 @@ void Spectrograph::setup(double* snd_buffer) {
 		}
 	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
+	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
 
 
 	glm::mat4 view          = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
@@ -204,10 +236,12 @@ void Spectrograph::update() {
     fftw_execute(this->fft_plan);
 
     for (int j=0; j<this->height; j++) {
-	texturebuf[current_col + j*width] = this->fft_buffer[j][1];
+	texturebuf[current_col + j*width] = this->fft_buffer[j][1]*.1;
+	// texturebuf[current_col + j*width] = (float)(j)/this->height;
     }
 
     glUseProgram(this->shader);
+    glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, this->texture);
     // glTexSubImage2D(GL_TEXTURE_2D, 0, current_col, 0, 1, this->height, GL_RED, GL_FLOAT, texturebuf);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
@@ -226,8 +260,9 @@ void Spectrograph::update() {
 
 void Spectrograph::draw() {
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-	glBindTexture(GL_TEXTURE_2D, this->texture);
+	// glBindTexture(GL_TEXTURE_2D, this->texture);
 	glUseProgram(this->shader);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
+
