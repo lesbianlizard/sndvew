@@ -10,6 +10,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
+#include <string.h>
 
 void is_bad_problem() {
     switch(glGetError()) {
@@ -97,9 +98,7 @@ GLint compile_shader(const char* vertex_shader_source, const char* fragment_shad
 Spectrograph::Spectrograph() {
 	this->width = 512;
 	this->height = 1024;
-
-	this->fft_samples = 1024;
-
+	this->fft_samples = 4096;
 	this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
 }
 
@@ -116,25 +115,14 @@ void Spectrograph::setSize(int x, int y) {
     this->vertices[25] = this->size[0];
 }
 
-void Spectrograph::setup(double* snd_buffer, const char* gradient_filename) {
+void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filename) {
 
-
-	this->snd_buffer_ptr = snd_buffer;
-	this->fft_plan = fftw_plan_dft_r2c_1d(this->fft_samples, this->snd_buffer_ptr, this->fft_buffer, FFTW_ESTIMATE);
+	this->audio_buffer = audio_buffer;
+	this->fft_plan = fftw_plan_dft_r2c_1d(this->fft_samples, this->fft_input_buffer, this->fft_buffer, FFTW_ESTIMATE);
 
 	this->shader = compile_shader(this->vsh_source, this->fsh_source);
 	GLint pos = glGetAttribLocation(this->shader, "position");
 	GLint tex_pos = glGetAttribLocation(this->shader, "a_texCoord");
-
-	// GLfloat vertices[] = {
-	// 	-1.0f,  1.0f,  0.0f,   0.0f, 1.0f,
-	// 	1.0f,  -1.0f,  0.0f,   1.0f, 0.0f,
-	// 	-1.0f, -1.0f,  0.0f,   0.0f, 0.0f,
-        //
-	// 	-1.0f,  1.0f,  0.0f,   0.0f, 1.0f,
-	// 	1.0f,   1.0f,  0.0f,   1.0f, 1.0f,
-	// 	1.0f,  -1.0f,  0.0f,   1.0f, 0.0f,
-	// };
 
 	GLfloat vertices[] = {
 		0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -233,6 +221,8 @@ void Spectrograph::setup(double* snd_buffer, const char* gradient_filename) {
 }
 
 void Spectrograph::update() {
+    audio_buffer->pop(this->fft_input_buffer, fft_samples);
+    // memcpy(this->fft_input_buffer, samples, fft_samples);
     fftw_execute(this->fft_plan);
 
     for (int j=0; j<this->height; j++) {

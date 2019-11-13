@@ -3,6 +3,7 @@
 
 #include <fftw3.h>
 #include <glm/glm.hpp>
+#include "audio_buffer.h"
 
 class Graph {
 	protected:
@@ -26,7 +27,7 @@ class Spectrograph : public Graph {
 
 		void setSize(int width, int height);
 
-		void setup(double*, const char*);
+		void setup(AudioBuffer*, const char*);
 		void update();
 		void draw();
 
@@ -36,8 +37,9 @@ class Spectrograph : public Graph {
 		int width=0;
 		int height=0;
 
-		double* snd_buffer_ptr;
+		AudioBuffer* audio_buffer;
 
+		double* fft_input_buffer;
 		fftw_complex* fft_buffer;
 		fftw_plan fft_plan;
 		int fft_samples;

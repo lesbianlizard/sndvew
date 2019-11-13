@@ -9,15 +9,37 @@ class AudioBuffer {
 		AudioBuffer(int size);
 		~AudioBuffer();
 
-		int setup(int insert_size, int read_size, int hop_size);
+		int setup(int insert_size, int history_size);
+
+		void push(sample_t* moar_audios, int count);
+		int pop(double* destination, int count);
+
+		int unread() const;
+
 		int addAccessor();
-		void addSamples(sample_t* moar_audios, int count);
-		void getBuffer(const int& samples) const;
+
+		void print() {
+			for (int i=0; i<size; i++) {
+				fprintf(stderr, "%.1f ", buf[i]);
+			}
+			fprintf(stderr, "\n");
+		}
 
 	protected:
-		sample_t* buf;
+		double* buf;
 
-		int input_head;
+		int idx(int i) {
+			return i%size;
+		}
+
+		int headroom() {
+			return size - input_head;
+		}
+
+		void shift(int samples);
+
+		int input_head = 0;
+		int read_head = 0;
 
 		int size = 0;
 

@@ -30,6 +30,8 @@ namespace g {
     const int      buf_s = 1024;
     double	       buf[buf_s];
 
+    AudioBuffer spec1 = AudioBuffer(48000);
+
     // namespace spec {
     //     const int      w = 1024;
     //     const int      h = (buf_s / 2 + 1);
@@ -65,6 +67,8 @@ process (jack_nframes_t nframes, void *arg)
 	g::buf[i] = in[i];
     }
 
+    // g::spec1.addSamples(in, nframes);
+
     return 0;      
 }
 
@@ -88,12 +92,37 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-int main(int argc, char* argv[]) {
 
-    // AudioBuffer ab(1024);
+void test_audio_buffer() {
+    AudioBuffer ab(5);
     // int head = ab.addAccessor();
-    // int head2 = ab.addAccessor();
-    // exit(1);
+
+    float audio_data[20];
+    for (int i=0; i<10; i++) {
+	audio_data[0] = i;
+	audio_data[1] = i+1;
+	ab.push(audio_data, 2);
+	ab.print();
+
+	fprintf(stderr, "%i mail\n", ab.unread());
+	double buf[5];
+	ab.pop(buf, 1);
+	for (int j=0; j<2; j++) {
+	    fprintf(stderr, "%.1f ", buf[j]);
+	}
+	fprintf(stderr, "\n");
+	fprintf(stderr, "%i mail\n", ab.unread());
+    }
+
+
+    for (int i=0; i<20; i++) {
+	audio_data[i] = i;
+    }
+    ab.push(audio_data, 20);
+    ab.print();
+}
+
+int main(int argc, char* argv[]) {
 
     const char **ports;
     const char *client_name = "sndvew";
@@ -207,7 +236,7 @@ int main(int argc, char* argv[]) {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     Spectrograph spectro;
-    spectro.setup(g::buf, "gradient.png");
+    spectro.setup(&g::spec1, "gradient.png");
 
     while (!glfwWindowShouldClose(window)) {
 	glClear(GL_COLOR_BUFFER_BIT);
