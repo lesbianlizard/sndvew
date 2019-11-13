@@ -247,8 +247,6 @@ void Spectrograph::update() {
 
     glUseProgram(this->shader);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->gradient_tex);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, this->texture);
 
@@ -265,7 +263,12 @@ void Spectrograph::update() {
 
 void Spectrograph::draw() {
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-	// glBindTexture(GL_TEXTURE_2D, this->texture);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, this->gradient_tex);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, this->texture);
+
 	glUseProgram(this->shader);
 
 	glDrawArrays(GL_TRIANGLES, 0, 6);
