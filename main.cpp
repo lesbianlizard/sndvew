@@ -79,42 +79,8 @@ jack_shutdown (void *arg)
     exit (1);
 }
 
-// void update_spec() {
-//     fftwf_execute(g::spec::plan);
-//
-//     for (int i=0; i<g::spec::h; i++) {
-// 	// printf("out[%d] = {%f, %fi}\n", i, g::spec::out[i][REAL], g::spec::out[i][IMAG]);
-// 	// printf("out[%d] = %i\n", i, int(abs(g::spec::out[i][REAL] * 16)));
-// 	g::spec::img[i][g::spec::col] = abs(g::spec::out[i][REAL]);
-// 	// g::spec::img[g::spec::col][i] = 255;
-//     }
-//
-//     g::spec::col++;
-//     if (g::spec::col >= g::spec::w) {
-// 	g::spec::col = 0;
-//     }
-// }
-//
 static const GLuint WIDTH = 1920;
 static const GLuint HEIGHT = 1080;
-// static const GLchar* vertex_shader_source =
-//     "#version 100\n"
-//     "attribute vec3 position;\n"
-//     "attribute vec2 a_texCoord;\n"
-//     "varying vec2 v_texCoord;\n"
-//     "void main() {\n"
-//     "   gl_Position = vec4(position, 1.0);\n"
-//     "   v_texCoord = a_texCoord;\n"
-//     "}\n";
-// static const GLchar* fragment_shader_source =
-//     "#version 100\n"
-// 	 "precision mediump float;\n"
-// 	 "uniform sampler2D audio_data;\n"
-//     "varying vec2 v_texCoord;\n"
-//     "void main() {\n"
-//     // "   gl_FragColor = vec4(v_texCoord, 1.0, 1.0);\n"
-//     "   gl_FragColor = vec4(texture2D(audio_data, vec2(v_texCoord.x, v_texCoord.y) ).r * vec3(0.0, 0.5, 2.0), 1.0);\n"
-//     "}\n";
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)

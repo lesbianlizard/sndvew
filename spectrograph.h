@@ -86,8 +86,8 @@ class Spectrograph : public Graph {
 			// "   gl_FragColor = vec4(0.0f);\n"
 			// "}\n"
 			// "   gl_FragColor = vec4(v_texCoord, 1.0, 1.0);\n"
-			"	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0))).r;\n"
-			"  gl_FragColor = vec4(texture2D(gradient, vec2(.1 + ampl, 1.0)));\n"
+			"	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0)/5)).r;\n"
+			"  gl_FragColor = vec4(texture2D(gradient, vec2(ampl, 1.0)));\n"
 			// "  gl_FragColor = vec4(vec3(ampl), 1.0);\n"
 			"}\n";
 
