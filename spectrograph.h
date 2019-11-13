@@ -17,12 +17,14 @@ class Graph {
 				);
 
 		Graph() {};
+		Graph(glm::vec3 pos, glm::vec3 size) : position(pos), size(size) {};
 };
 
 
 class Spectrograph : public Graph {
 	public:
 		Spectrograph();
+		Spectrograph(glm::vec3 pos, glm::vec3 size);
 		// ~Spectrograph();
 
 		void setSize(int width, int height);
@@ -82,13 +84,9 @@ class Spectrograph : public Graph {
 			"varying vec2 v_texCoord;\n"
 
 			"void main() {\n"
-			// "if (round(sin(v_texCoord.x*20.0f)) == 1.0f) {\n"
-			"   gl_FragColor = vec4(1.0f);\n"
-			// "} else\n"
-			// "   gl_FragColor = vec4(0.0f);\n"
-			// "}\n"
-			// "   gl_FragColor = vec4(v_texCoord, 1.0, 1.0);\n"
-			"	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0)/5)).r;\n"
+
+			"	float ampl = log(texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0)/3.0)).r * 9.0) * .3;\n"
+			// "	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, v_texCoord.y)).r * .5;\n"
 			"  gl_FragColor = vec4(texture2D(gradient, vec2(ampl, 1.0)));\n"
 			// "  gl_FragColor = vec4(vec3(ampl), 1.0);\n"
 			"}\n";

@@ -62,8 +62,8 @@ void AudioBuffer::push(sample_t* moar_audios, int count) {
 		count = size;
 	}
 
-	if (idx(input_head+count) < read_head)
-		fprintf(stderr, "Warning: buffer overfilled, you yall gotta read faster\n");
+	// if (idx(input_head+count) < read_head)
+	// 	fprintf(stderr, "Warning: buffer overfilled, you yall gotta read faster\n");
 
 	int index = input_head;
 	for (int i=0; i<count; i++) {
@@ -101,7 +101,7 @@ int AudioBuffer::pop(double* dest, int count) {
 	}
 
 	read_head = idx(read_head+count);
-
+	return count;
 }
 
 int AudioBuffer::unread() const {

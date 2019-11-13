@@ -24,13 +24,15 @@
 
 
 namespace g {
-    jack_port_t*   input;
+    jack_port_t*   input1;
+    jack_port_t*   input2;
     jack_client_t* client;
 
     const int      buf_s = 1024;
     double	       buf[buf_s];
 
-    AudioBuffer spec1 = AudioBuffer(48000);
+    AudioBuffer mic1 = AudioBuffer(48000);
+    AudioBuffer mic2 = AudioBuffer(48000);
 
     // namespace spec {
     //     const int      w = 1024;
@@ -53,21 +55,23 @@ namespace g {
     int
 process (jack_nframes_t nframes, void *arg)
 {
-    sample_t *in;
+    sample_t* in1;
+    sample_t* in2;
+
+    in1 = (sample_t*)(jack_port_get_buffer(g::input1, nframes));
+    in2 = (sample_t*)(jack_port_get_buffer(g::input2, nframes));
+
     // int copy_s = sizeof(sample_t) * nframes;
-
-    in = (sample_t*)(jack_port_get_buffer(g::input, nframes));
-
     // if (nframes > g::buf_s) {
     // 	copy_s = sizeof(sample_t) * g::buf_s;
     // }
-
     // memcpy (g::buf, in, copy_s);
-    for (unsigned int i=0; i<nframes; i++) {
-	g::buf[i] = in[i];
-    }
+    // for (unsigned int i=0; i<nframes; i++) {
+	// g::buf[i] = in[i];
+    // }
 
-    // g::spec1.addSamples(in, nframes);
+    g::mic1.push(in1, nframes);
+    g::mic2.push(in2, nframes);
 
     return 0;      
 }
@@ -124,7 +128,7 @@ void test_audio_buffer() {
 
 int main(int argc, char* argv[]) {
 
-    const char **ports;
+    // const char **ports;
     const char *client_name = "sndvew";
     const char *server_name = NULL;
     jack_options_t options = JackNullOption;
@@ -169,11 +173,15 @@ int main(int argc, char* argv[]) {
 	    jack_get_sample_rate (g::client));
 
     /* create input port */
-    g::input = jack_port_register (g::client, "input",
+    g::input1 = jack_port_register (g::client, "mic1",
 	    JACK_DEFAULT_AUDIO_TYPE,
 	    JackPortIsInput, 0);
 
-    if ((g::input == NULL)) {
+    g::input2 = jack_port_register (g::client, "mic2",
+	    JACK_DEFAULT_AUDIO_TYPE,
+	    JackPortIsInput, 0);
+
+    if (g::input1 == NULL || g::input2 == NULL) {
 	fprintf(stderr, "no more JACK ports available\n");
 	exit (1);
     }
@@ -194,18 +202,17 @@ int main(int argc, char* argv[]) {
      * "input" to the backend, and capture ports are "output" from
      * it.
      */
-    ports = jack_get_ports (g::client, NULL, NULL,
-	    JackPortIsPhysical|JackPortIsOutput);
-    if (ports == NULL) {
-	fprintf(stderr, "no physical capture ports\n");
-	exit (1);
-    }
-
-    if (jack_connect (g::client, ports[0], jack_port_name (g::input))) {
-	fprintf (stderr, "cannot connect input ports\n");
-    }
-
-    free (ports);
+    // ports = jack_get_ports (g::client, NULL, NULL,
+	//     JackPortIsPhysical|JackPortIsOutput);
+    // if (ports == NULL) {
+	// fprintf(stderr, "no physical capture ports\n");
+	// exit (1);
+    // }
+    //
+    // if (jack_connect (g::client, ports[0], jack_port_name (g::input))) {
+	// fprintf (stderr, "cannot connect input ports\n");
+    // }
+    // free (ports);
 
 
     // GLuint shader_program, vbo;
@@ -235,15 +242,21 @@ int main(int argc, char* argv[]) {
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    Spectrograph spectro;
-    spectro.setup(&g::spec1, "gradient.png");
+    Spectrograph spectro1(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1920/2, 1080/2, 1.0));
+    spectro1.setup(&g::mic1, "gradient.png");
+
+    Spectrograph spectro2(glm::vec3(0, 1080/2, 0.0), glm::vec3(1920/2, 1080/2, 1.0));
+    spectro2.setup(&g::mic2, "gradient.png");
 
     while (!glfwWindowShouldClose(window)) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glfwPollEvents();
 
-	spectro.update();
-	spectro.draw();
+	spectro1.update();
+	spectro2.update();
+
+	spectro1.draw();
+	spectro2.draw();
 
 	glfwSwapBuffers(window);
     }

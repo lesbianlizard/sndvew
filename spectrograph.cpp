@@ -96,10 +96,19 @@ GLint compile_shader(const char* vertex_shader_source, const char* fragment_shad
 }
 
 Spectrograph::Spectrograph() {
-	this->width = 512;
-	this->height = 1024;
-	this->fft_samples = 4096;
+	this->width = 1920/2;
+	this->height = 1080/2;
+
+	this->fft_samples = 1024;
+	this->fft_input_buffer = new double[fft_samples];
 	this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
+}
+Spectrograph::Spectrograph(glm::vec3 pos, glm::vec3 size) : Graph(pos, size) {
+    this->width = size.x;
+    this->height = size.y;
+    this->fft_samples = 1024;
+    this->fft_input_buffer = new double[fft_samples];
+    this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
 }
 
 void Spectrograph::setSize(int x, int y) {
@@ -135,7 +144,7 @@ void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filenam
 	};
 	memcpy(this->vertices, vertices, sizeof(GLfloat)*30);
 
-	this->setSize(512, 512);
+	this->setSize(width, height);
 
 	glGenBuffers(1, &this->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
@@ -207,7 +216,7 @@ void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filenam
 	glm::mat4 view          = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         glm::mat4 projection    = glm::mat4(1.0f);
 	projection = glm::ortho(0.0f, 1920.0f, 1080.0f, 0.0f, 0.1f, 100.0f);
-        view       = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        view       = glm::translate(view, glm::vec3(position.x, position.y, -3.0f));
 
 	GLint viewAddr = glGetUniformLocation(this->shader, "view");
 	glUniformMatrix4fv(viewAddr, 1, GL_FALSE, glm::value_ptr(view));
@@ -221,30 +230,36 @@ void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filenam
 }
 
 void Spectrograph::update() {
-    audio_buffer->pop(this->fft_input_buffer, fft_samples);
-    // memcpy(this->fft_input_buffer, samples, fft_samples);
-    fftw_execute(this->fft_plan);
+    while (audio_buffer->unread() >= fft_samples) {
+	audio_buffer->pop(this->fft_input_buffer, fft_samples);
+	// memcpy(this->fft_input_buffer, samples, fft_samples);
+	fftw_execute(this->fft_plan);
 
-    for (int j=0; j<this->height; j++) {
-	texturebuf[current_col + j*width] = this->fft_buffer[j][1]*.1;
-	// texturebuf[current_col + j*width] = (float)(j)/this->height;
+	for (int j=0; j<this->height; j++) {
+	    texturebuf[current_col + j*width] = this->fft_buffer[j][1]*.1;
+	    // texturebuf[current_col + j*width] = (float)(j)/this->height;
+	}
+
+	current_col+=1;
+	if (current_col >= this->width)
+	    current_col = 0;
     }
 
     glUseProgram(this->shader);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, this->gradient_tex);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, this->texture);
+
     // glTexSubImage2D(GL_TEXTURE_2D, 0, current_col, 0, 1, this->height, GL_RED, GL_FLOAT, texturebuf);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
 
     GLint xoffsetAddr = glGetUniformLocation(this->shader, "x_offset");
     //fprintf(stderr, "%f\n", (float)(current_col)/width);
     glUniform1f(xoffsetAddr, (float)(current_col)/width);
     //is_bad_problem();
 
-    current_col+=1;
-    if (current_col >= this->width) {
-	current_col = 0;
-    }
 
 }
 
