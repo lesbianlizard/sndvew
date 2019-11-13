@@ -251,7 +251,9 @@ void Spectrograph::update() {
     glBindTexture(GL_TEXTURE_2D, this->texture);
 
     // glTexSubImage2D(GL_TEXTURE_2D, 0, current_col, 0, 1, this->height, GL_RED, GL_FLOAT, texturebuf);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
+
+    // would be nice to use a float internal format like GL_R16F but it doesn't seem to be supported on the pi?
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
 
     GLint xoffsetAddr = glGetUniformLocation(this->shader, "x_offset");
     //fprintf(stderr, "%f\n", (float)(current_col)/width);
