@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include <GL/glew.h>
-//#define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -14,62 +13,32 @@
 
 #include <jack/jack.h>
 
-// #include <complex.h>
-#include <fftw3.h>
-
-
 #include "typedefs.h"
 #include "spectrograph.h"
 #include "audio_buffer.h"
 
+static const GLuint WIDTH = 1920;
+static const GLuint HEIGHT = 1080;
 
 namespace g {
     jack_port_t*   input1;
     jack_port_t*   input2;
     jack_client_t* client;
 
-    const int      buf_s = 1024;
-    double	       buf[buf_s];
-
     AudioBuffer mic1 = AudioBuffer(48000);
     AudioBuffer mic2 = AudioBuffer(48000);
-
-    // namespace spec {
-    //     const int      w = 1024;
-    //     const int      h = (buf_s / 2 + 1);
-    //     float img[w][h];
-    //     int            col = 0;
-    //     fftwf_complex* out = (fftwf_complex*) fftwf_malloc(sizeof(fftwf_complex) * h);
-    //     fftwf_plan     plan = fftwf_plan_dft_r2c_1d(buf_s, buf, out, FFTW_ESTIMATE);
-    // }
 }
 
 /**
  * The process callback for this JACK application is called in a
  * special realtime thread once for each audio cycle.
- *
- * This client does nothing more than copy data from its input
- * port to its output port. It will exit when stopped by 
- * the user (e.g. using Ctrl-C on a unix-ish operating system)
  */
-    int
-process (jack_nframes_t nframes, void *arg)
-{
+int process (jack_nframes_t nframes, void *arg) {
     sample_t* in1;
     sample_t* in2;
 
     in1 = (sample_t*)(jack_port_get_buffer(g::input1, nframes));
     in2 = (sample_t*)(jack_port_get_buffer(g::input2, nframes));
-
-    // int copy_s = sizeof(sample_t) * nframes;
-    // if (nframes > g::buf_s) {
-    // 	copy_s = sizeof(sample_t) * g::buf_s;
-    // }
-    // memcpy (g::buf, in, copy_s);
-    // for (unsigned int i=0; i<nframes; i++) {
-	// g::buf[i] = in[i];
-    // }
-
     g::mic1.push(in1, nframes);
     g::mic2.push(in2, nframes);
 
@@ -81,21 +50,13 @@ process (jack_nframes_t nframes, void *arg)
  * JACK calls this shutdown_callback if the server ever shuts down or
  * decides to disconnect the client.
  */
-    void
-jack_shutdown (void *arg)
-{
-    exit (1);
+void jack_shutdown (void *arg) {
+    exit(1);
 }
 
-static const GLuint WIDTH = 1920;
-static const GLuint HEIGHT = 1080;
-
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
-
 
 void test_audio_buffer() {
     AudioBuffer ab(5);
@@ -126,16 +87,15 @@ void test_audio_buffer() {
     ab.print();
 }
 
+
 int main(int argc, char* argv[]) {
 
-    // const char **ports;
     const char *client_name = "sndvew";
     const char *server_name = NULL;
     jack_options_t options = JackNullOption;
     jack_status_t status;
 
     /* open a client connection to the JACK server */
-
     g::client = jack_client_open (client_name, options, &status, server_name);
     if (g::client == NULL) {
 	fprintf (stderr, "jack_client_open() failed, "
@@ -156,21 +116,18 @@ int main(int argc, char* argv[]) {
     /* tell the JACK server to call `process()' whenever
        there is work to be done.
        */
-
-    jack_set_process_callback (g::client, process, 0);
+    jack_set_process_callback(g::client, process, 0);
 
     /* tell the JACK server to call `jack_shutdown()' if
        it ever shuts down, either entirely, or if it
        just decides to stop calling us.
        */
-
-    jack_on_shutdown (g::client, jack_shutdown, 0);
+    jack_on_shutdown(g::client, jack_shutdown, 0);
 
     /* display the current sample rate. 
     */
-
-    printf ("engine sample rate: %" PRIu32 "\n",
-	    jack_get_sample_rate (g::client));
+    printf("engine sample rate: %" PRIu32 "\n",
+	    jack_get_sample_rate(g::client));
 
     /* create input port */
     g::input1 = jack_port_register (g::client, "mic1",
@@ -194,33 +151,9 @@ int main(int argc, char* argv[]) {
 	exit (1);
     }
 
-
-    /* Connect the ports.  You can't do this before the client is
-     * activated, because we can't make connections to clients
-     * that aren't running.  Note the confusing (but necessary)
-     * orientation of the driver backend ports: playback ports are
-     * "input" to the backend, and capture ports are "output" from
-     * it.
-     */
-    // ports = jack_get_ports (g::client, NULL, NULL,
-	//     JackPortIsPhysical|JackPortIsOutput);
-    // if (ports == NULL) {
-	// fprintf(stderr, "no physical capture ports\n");
-	// exit (1);
-    // }
-    //
-    // if (jack_connect (g::client, ports[0], jack_port_name (g::input))) {
-	// fprintf (stderr, "cannot connect input ports\n");
-    // }
-    // free (ports);
-
-
-    // GLuint shader_program, vbo;
     GLFWwindow* window;
-
     glfwInit();
 
-    //glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
@@ -232,20 +165,18 @@ int main(int argc, char* argv[]) {
 	return -1;
     }
 
-
     printf("GL_VERSION  : %s\n", glGetString(GL_VERSION) );
     printf("GL_RENDERER : %s\n", glGetString(GL_RENDERER) );
-
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glViewport(0, 0, WIDTH, HEIGHT);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    Spectrograph spectro1(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1920/2, 1080/2, 1.0));
+    Spectrograph spectro1(glm::vec3(0.0, 0.0, 0.0), glm::vec3(WIDTH/2, HEIGHT/2, 1.0));
     spectro1.setup(&g::mic1, "gradient.png");
 
-    Spectrograph spectro2(glm::vec3(0, 1080/2, 0.0), glm::vec3(1920/2, 1080/2, 1.0));
+    Spectrograph spectro2(glm::vec3(0, HEIGHT/2, 0.0), glm::vec3(HEIGHT/2, HEIGHT/2, 1.0));
     spectro2.setup(&g::mic2, "gradient.png");
 
     while (!glfwWindowShouldClose(window)) {

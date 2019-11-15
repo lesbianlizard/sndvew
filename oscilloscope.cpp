@@ -1,19 +1,16 @@
 #include <GL/glew.h>
-//#define GLFW_INCLUDE_ES3
 #include <GLFW/glfw3.h>
 
 #include "stb_image.h"
-#include "spectrograph.h"
+#include "oscilloscope.h"
 #include "opengl_utils.h"
-#include <complex.h>
-#include <fftw3.h>
 #include <cstring>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 #include <string.h>
 
-Spectrograph::Spectrograph() {
+Oscilloscope::Oscilloscope() {
 	this->width = 1920/2;
 	this->height = 1080/2;
 
@@ -21,12 +18,25 @@ Spectrograph::Spectrograph() {
 	this->fft_input_buffer = new double[fft_samples];
 	this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
 }
-Spectrograph::Spectrograph(glm::vec3 pos, glm::vec3 size) : TextureGraph(pos, size) {
+Oscilloscope::Oscilloscope(glm::vec3 pos, glm::vec3 size) : Graph(pos, size) {
     this->width = size.x;
     this->height = size.y;
     this->fft_samples = 1024;
     this->fft_input_buffer = new double[fft_samples];
     this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
+}
+
+void Oscilloscope::setSize(int x, int y) {
+    this->size.x = x;
+    this->size.y = y;
+
+    this->vertices[1] = this->size[1];
+    this->vertices[16] = this->size[1];
+    this->vertices[21] = this->size[1];
+
+    this->vertices[5] = this->size[0];
+    this->vertices[20] = this->size[0];
+    this->vertices[25] = this->size[0];
 }
 
 void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filename) {
@@ -37,6 +47,19 @@ void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filenam
 	this->shader = compile_shader(this->vsh_source, this->fsh_source);
 	GLint pos = glGetAttribLocation(this->shader, "position");
 	GLint tex_pos = glGetAttribLocation(this->shader, "a_texCoord");
+
+	GLfloat vertices[] = {
+		0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+
+		0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+	};
+	memcpy(this->vertices, vertices, sizeof(GLfloat)*30);
+
+	this->setSize(width, height);
 
 	glGenBuffers(1, &this->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
