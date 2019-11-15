@@ -94,15 +94,12 @@ void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filenam
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	int tex_w, tex_h, tex_channels;
-	unsigned char* tex_data = stbi_load("gradient.png", &tex_w, &tex_h, &tex_channels, 0);
+	unsigned char* tex_data = stbi_load(gradient_filename, &tex_w, &tex_h, &tex_channels, 0);
 	if (!tex_data) {
 	    fprintf(stderr, "Failed to load image texture %s\n", gradient_filename);
 	}
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tex_w, tex_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_data);
-	// stbi_image_free(tex_data);
-
-
-	is_bad_problem();
+	stbi_image_free(tex_data);
 
 	glUseProgram(this->shader);
 
