@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
     Spectrograph spectro1(glm::vec3(0.0, 0.0, 0.0), glm::vec3(WIDTH/2, HEIGHT/2, 1.0));
     spectro1.setup(&g::mic1, "gradient.png");
 
-    Spectrograph spectro2(glm::vec3(0, HEIGHT/2, 0.0), glm::vec3(HEIGHT/2, HEIGHT/2, 1.0));
+    Spectrograph spectro2(glm::vec3(0, HEIGHT/2, 0.0), glm::vec3(WIDTH/2, HEIGHT/2, 1.0));
     spectro2.setup(&g::mic2, "gradient.png");
 
     while (!glfwWindowShouldClose(window)) {

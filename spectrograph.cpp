@@ -14,16 +14,11 @@
 #include <string.h>
 
 Spectrograph::Spectrograph() {
-	this->width = 1920/2;
-	this->height = 1080/2;
-
 	this->fft_samples = 1024;
 	this->fft_input_buffer = new double[fft_samples];
 	this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
 }
 Spectrograph::Spectrograph(glm::vec3 pos, glm::vec3 size) : TextureGraph(pos, size) {
-    this->width = size.x;
-    this->height = size.y;
     this->fft_samples = 1024;
     this->fft_input_buffer = new double[fft_samples];
     this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
@@ -90,20 +85,21 @@ void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filenam
 	tex_u = glGetUniformLocation(this->shader, "audio_data");
 	glUniform1i(tex_u, 1);
 
-	texturebuf = new GLfloat[this->width * this->height];
+	int width = int(size.x);
+	int height = int(size.y);
 
-	// GLfloat buf[this->width][this->height];
-	for (int i=0; i<this->width; i++) {
-	    for (int j=0; j<this->height; j++) {
+	texturebuf = new GLfloat[width * height];
+
+	for (int i=0; i<width; i++) {
+	    for (int j=0; j<height; j++) {
 			texturebuf[i + j*width] = 0.00f;
 		}
 	}
 
-	// glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
-
-
 	glm::mat4 view          = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
         glm::mat4 projection    = glm::mat4(1.0f);
+
+	// XXX: hardcoded screen size
 	projection = glm::ortho(0.0f, 1920.0f, 1080.0f, 0.0f, 0.1f, 100.0f);
         view       = glm::translate(view, glm::vec3(position.x, position.y, -3.0f));
 
@@ -119,18 +115,19 @@ void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filenam
 }
 
 void Spectrograph::update() {
+    int height = int(size.y);
+    int width = int(size.x);
+
     while (audio_buffer->unread() >= fft_samples) {
 	audio_buffer->pop(this->fft_input_buffer, fft_samples);
-	// memcpy(this->fft_input_buffer, samples, fft_samples);
 	fftw_execute(this->fft_plan);
 
-	for (int j=0; j<this->height; j++) {
+	for (int j=0; j<height; j++) {
 	    texturebuf[current_col + j*width] = this->fft_buffer[j][1]*.1;
-	    // texturebuf[current_col + j*width] = (float)(j)/this->height;
 	}
 
 	current_col+=1;
-	if (current_col >= this->width)
+	if (current_col >= width)
 	    current_col = 0;
     }
 
@@ -142,14 +139,10 @@ void Spectrograph::update() {
     // glTexSubImage2D(GL_TEXTURE_2D, 0, current_col, 0, 1, this->height, GL_RED, GL_FLOAT, texturebuf);
 
     // would be nice to use a float internal format like GL_R16F but it doesn't seem to be supported on the pi?
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, this->width, this->height, 0, GL_RED, GL_FLOAT, texturebuf);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_FLOAT, texturebuf);
 
     GLint xoffsetAddr = glGetUniformLocation(this->shader, "x_offset");
-    //fprintf(stderr, "%f\n", (float)(current_col)/width);
     glUniform1f(xoffsetAddr, (float)(current_col)/width);
-    //is_bad_problem();
-
-
 }
 
 void Spectrograph::draw() {

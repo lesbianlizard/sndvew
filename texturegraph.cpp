@@ -13,13 +13,13 @@ TextureGraph::TextureGraph(glm::vec3 pos, glm::vec3 size) : Object(pos, size) {
 void TextureGraph::setSize(glm::vec3 s) {
 	this->size = s;
 
-	this->vertices[1] = this->size[1];
-	this->vertices[16] = this->size[1];
-	this->vertices[21] = this->size[1];
+	this->vertices[1] = this->size.y;
+	this->vertices[16] = this->size.y;
+	this->vertices[21] = this->size.y;
 
-	this->vertices[5] = this->size[0];
-	this->vertices[20] = this->size[0];
-	this->vertices[25] = this->size[0];
+	this->vertices[5] = this->size.x;
+	this->vertices[20] = this->size.x;
+	this->vertices[25] = this->size.x;
 }
 
 void TextureGraph::setup() {
