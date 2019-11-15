@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define GLFW_INCLUDE_ES3
+#define GLFW_INCLUDE_ES2
 #include <GLFW/glfw3.h>
 
 #include <stdio.h>
@@ -81,8 +81,8 @@ void update_spec() {
     for (int i=0; i<g::spec::h; i++) {
 	// printf("out[%d] = {%f, %fi}\n", i, g::spec::out[i][REAL], g::spec::out[i][IMAG]);
 	// printf("out[%d] = %i\n", i, int(abs(g::spec::out[i][REAL] * 16)));
-	// g::spec::img[g::spec::col][i] = int(abs(g::spec::out[i][REAL] * 64));
-	g::spec::img[g::spec::col][i] = 255;
+	g::spec::img[i][g::spec::col] = int(abs(g::spec::out[i][REAL] * 64));
+	// g::spec::img[g::spec::col][i] = 255;
     }
 
     g::spec::col++;
@@ -246,7 +246,7 @@ int main(int argc, char* argv[]) {
     GLFWwindow* window;
 
     glfwInit();
-    // glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     window = glfwCreateWindow(WIDTH, HEIGHT, __FILE__, NULL, NULL);
@@ -297,8 +297,8 @@ int main(int argc, char* argv[]) {
    GLuint texID;
    glGenTextures(1, &texID);
    glBindTexture(GL_TEXTURE_2D, texID);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -310,38 +310,31 @@ int main(int argc, char* argv[]) {
 
    /* --- */
 
-    // unsigned char buf[g::spec::w*3][g::spec::h*3];
-    // for (int i=0; i<g::spec::w*3; i++) {
-	// for (int j=0; j<g::spec::h*3; j++) {
-	//     buf[i][j] = 4;
-	// }
-    // }
-    //
+    unsigned char buf[g::spec::w*3][g::spec::h*3];
+    for (int i=0; i<g::spec::w*3; i++) {
+	for (int j=0; j<g::spec::h*3; j++) {
+	    buf[i][j] = 4;
+	}
+    }
+
 
     while (!glfwWindowShouldClose(window)) {
 	update_spec();
+	for (int j=0; j<g::spec::h; j++) {
+	    for (int i=0; i<g::spec::w; i++) {
+		buf[j][3*i] = g::spec::img[j][i];
+		buf[j][3*i+1] = g::spec::img[j][i];
+		buf[j][3*i+2] = g::spec::img[j][i];
 
-	// fprintf(stderr, "%ix%i\n", g::spec::w, g::spec::h);
-	// for (int j=0; j<513; j++) {
-	//     for (int i=0; i<513; i++) {
-	// 	buf[j][3*i] = g::spec::img[j][i];
-	// 	buf[j][3*i+1] = g::spec::img[j][i];
-	// 	buf[j][3*i+2] = g::spec::img[j][i];
-        //
-	// 	if (j==51) {
-	// 	    buf[j][3*i] = 255;
-	// 	    buf[j][3*i+1] = 10;
-	// 	    buf[j][3*i+2] = 120;
-	// 	}
-	// 	if (j==50) {
-	// 	    buf[j][3*i] = 50;
-	// 	    buf[j][3*i+1] = 10;
-	// 	    buf[j][3*i+2] = 255;
-	// 	}
-	//     }
-	// }
+		if (j==10 || j==50) {
+		    buf[j][3*i+0] = 255;
+		    buf[j][3*i+1] = 10;
+		    buf[j][3*i+2] = 120;
+		}
+	    }
+	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, g::spec::w, g::spec::h, 0, GL_RED, GL_UNSIGNED_BYTE, g::spec::img);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, g::spec::h, g::spec::w, 0, GL_RGB, GL_UNSIGNED_BYTE, buf);
 
         glfwPollEvents();
         glClear(GL_COLOR_BUFFER_BIT);
