@@ -15,6 +15,7 @@
 
 #include "typedefs.h"
 #include "spectrograph.h"
+#include "oscilloscope.h"
 #include "audio_buffer.h"
 
 static const GLuint WIDTH = 1920;
@@ -60,7 +61,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 
 void test_audio_buffer() {
     AudioBuffer ab(5);
-    // int head = ab.addAccessor();
+    int handle = ab.addAccessor();
 
     float audio_data[20];
     for (int i=0; i<10; i++) {
@@ -69,14 +70,14 @@ void test_audio_buffer() {
 	ab.push(audio_data, 2);
 	ab.print();
 
-	fprintf(stderr, "%i mail\n", ab.unread());
+	fprintf(stderr, "%i mail\n", ab.unread(handle));
 	double buf[5];
-	ab.pop(buf, 1);
+	ab.pop(handle, buf, 2);
 	for (int j=0; j<2; j++) {
 	    fprintf(stderr, "%.1f ", buf[j]);
 	}
 	fprintf(stderr, "\n");
-	fprintf(stderr, "%i mail\n", ab.unread());
+	fprintf(stderr, "%i mail\n", ab.unread(handle));
     }
 
 
@@ -89,6 +90,9 @@ void test_audio_buffer() {
 
 
 int main(int argc, char* argv[]) {
+
+    // test_audio_buffer();
+    // exit(1);
 
     const char *client_name = "sndvew";
     const char *server_name = NULL;
@@ -179,6 +183,9 @@ int main(int argc, char* argv[]) {
     Spectrograph spectro2(glm::vec3(0, HEIGHT/2, 0.0), glm::vec3(WIDTH/2, HEIGHT/2, 1.0));
     spectro2.setup(&g::mic2, "gradient.png");
 
+    Oscilloscope oscillo1(glm::vec3(WIDTH/2, 0.0, 0.0), glm::vec3(WIDTH/2, HEIGHT/2, 1.0));
+    oscillo1.setup(&g::mic1, "gradient.png");
+
     while (!glfwWindowShouldClose(window)) {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glfwPollEvents();
@@ -186,8 +193,12 @@ int main(int argc, char* argv[]) {
 	spectro1.update();
 	spectro2.update();
 
+	oscillo1.update();
+
 	spectro1.draw();
 	spectro2.draw();
+
+	oscillo1.draw();
 
 	glfwSwapBuffers(window);
     }

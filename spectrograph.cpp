@@ -27,6 +27,8 @@ Spectrograph::Spectrograph(glm::vec3 pos, glm::vec3 size) : TextureGraph(pos, si
 void Spectrograph::setup(AudioBuffer* audio_buffer, const char* gradient_filename) {
 
 	this->audio_buffer = audio_buffer;
+	this->handle = this->audio_buffer->addAccessor();
+
 	this->fft_plan = fftw_plan_dft_r2c_1d(this->fft_samples, this->fft_input_buffer, this->fft_buffer, FFTW_ESTIMATE);
 
 	this->shader = compile_shader(this->vsh_source, this->fsh_source);
@@ -118,8 +120,8 @@ void Spectrograph::update() {
     int height = int(size.y);
     int width = int(size.x);
 
-    while (audio_buffer->unread() >= fft_samples) {
-	audio_buffer->pop(this->fft_input_buffer, fft_samples);
+    while (audio_buffer->unread(this->handle) >= fft_samples) {
+	audio_buffer->pop(this->handle, this->fft_input_buffer, fft_samples);
 	fftw_execute(this->fft_plan);
 
 	for (int j=0; j<height; j++) {

@@ -24,7 +24,7 @@ int AudioBuffer::addAccessor() {
 		delete[] temp;
 	}
 
-	return accessor_count;
+	return accessor_count-1;
 }
 
 int AudioBuffer::setup(int insert_size, int history_size) {
@@ -76,11 +76,13 @@ void AudioBuffer::push(sample_t* moar_audios, int count) {
 }
 
 
-int AudioBuffer::pop(double* dest, int count) {
+int AudioBuffer::pop(int accessor, double* dest, int count) {
 	if (count >= size) {
 		fprintf(stderr, "Warning: attempt to read more samples than buffer is large\n");
 		count = size;
 	}
+
+	int& read_head = acc_head(accessor);
 
 	// if (idx(read_head+count) < input_head)
 	// 	fprintf(stderr, "Warning: buffer overread, you gotta write faster\n");
@@ -104,7 +106,9 @@ int AudioBuffer::pop(double* dest, int count) {
 	return count;
 }
 
-int AudioBuffer::unread() const {
+int AudioBuffer::unread(int handle) const {
+	int& read_head = acc_head(handle);
+
 	if (input_head < read_head)
 		return (size+input_head - read_head);
 

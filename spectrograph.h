@@ -19,9 +19,8 @@ class Spectrograph : public TextureGraph {
 	protected:
 
 		int current_col=0;
-		int width=0;
-		int height=0;
 
+		int handle;
 		AudioBuffer* audio_buffer;
 
 		double* fft_input_buffer;
@@ -67,7 +66,7 @@ class Spectrograph : public TextureGraph {
 
 			"void main() {\n"
 
-			"	float ampl = log(texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0)/3.0)).r * 9.0) * .3;\n"
+			"	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0)/3.0)).r;\n"
 			// "	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, v_texCoord.y)).r * .5;\n"
 			"  gl_FragColor = vec4(texture2D(gradient, vec2(ampl, 1.0)));\n"
 			// "  gl_FragColor = vec4(vec3(ampl), 1.0);\n"

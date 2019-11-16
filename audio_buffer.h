@@ -12,9 +12,9 @@ class AudioBuffer {
 		int setup(int insert_size, int history_size);
 
 		void push(sample_t* moar_audios, int count);
-		int pop(double* destination, int count);
+		int pop(int handle, double* destination, int count);
 
-		int unread() const;
+		int unread(int handle) const;
 
 		int addAccessor();
 
@@ -32,8 +32,15 @@ class AudioBuffer {
 			return i%size;
 		}
 
-		int headroom() {
-			return size - input_head;
+		int& acc_head(int a) const {
+			if (a >= accessor_count) {
+				fprintf(stderr, "accessor handle out of range\n");
+			}
+			return accessors[a];
+		};
+
+		int headroom(int accessor) {
+			return size - acc_head(accessor);
 		}
 
 		void shift(int samples);
@@ -43,7 +50,7 @@ class AudioBuffer {
 
 		int size = 0;
 
-		int* accessors;
+		int* accessors = nullptr;
 		int accessor_count = 0;
 
 };
