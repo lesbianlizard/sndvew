@@ -172,19 +172,24 @@ int main(int argc, char* argv[]) {
     printf("GL_VERSION  : %s\n", glGetString(GL_VERSION) );
     printf("GL_RENDERER : %s\n", glGetString(GL_RENDERER) );
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
     glViewport(0, 0, WIDTH, HEIGHT);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    Spectrograph spectro1(glm::vec3(0.0, 0.0, 0.0), glm::vec3(WIDTH/2, HEIGHT/2, 1.0));
+    const int GAP = 10;
+
+    Spectrograph spectro1(glm::vec3(0.0, 0.0, 0.0), glm::vec3(WIDTH/2 - GAP/2, HEIGHT/2, 1.0));
     spectro1.setup(&g::mic1, "gradient.png");
 
-    Spectrograph spectro2(glm::vec3(0, HEIGHT/2, 0.0), glm::vec3(WIDTH/2, HEIGHT/2, 1.0));
+    Spectrograph spectro2(glm::vec3(WIDTH/2 + GAP/2, 0.0, 0.0), glm::vec3(WIDTH/2 - GAP/2, HEIGHT/2, 1.0));
     spectro2.setup(&g::mic2, "gradient.png");
 
-    Oscilloscope oscillo1(glm::vec3(WIDTH/2, 0.0, 0.0), glm::vec3(WIDTH/2, HEIGHT/2, 1.0));
+    Oscilloscope oscillo1(glm::vec3(0.0, HEIGHT/2, 0.0), glm::vec3(WIDTH/2 - GAP/2, HEIGHT/2, 1.0));
     oscillo1.setup(&g::mic1, "gradient.png");
+
+    Oscilloscope oscillo2(glm::vec3(WIDTH/2 + GAP/2, HEIGHT/2, 0.0), glm::vec3(WIDTH/2 - GAP/2, HEIGHT/2, 1.0));
+    oscillo2.setup(&g::mic2, "gradient.png");
 
     while (!glfwWindowShouldClose(window)) {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -194,11 +199,13 @@ int main(int argc, char* argv[]) {
 	spectro2.update();
 
 	oscillo1.update();
+	oscillo2.update();
 
 	spectro1.draw();
 	spectro2.draw();
 
 	oscillo1.draw();
+	oscillo2.draw();
 
 	glfwSwapBuffers(window);
     }

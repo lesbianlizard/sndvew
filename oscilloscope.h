@@ -64,7 +64,7 @@ class Oscilloscope: TextureGraph {
 			// "  gl_FragColor = vec4(texture2D(gradient, vec2(ampl, 1.0)));\n"
 			" vec3 color = vec3(0,0,0);\n"
 			// " float dist = 1.0f/(v_texCoord.y - ampl);\n"
-			" if (v_texCoord.y < ampl+.01 && v_texCoord.y > ampl-.01) {\n"
+			" if (v_texCoord.y < ampl+.005 && v_texCoord.y > ampl-.005) {\n"
 			// "		color = texture2D(gradient, vec2(max_ampl*5, 0.0)).rgb;\n"
 			"		color = vec3(.9* v_texCoord.y * 1.5, .9 * (1-v_texCoord.y) * 1.5, .1);\n"
 			"}\n"
