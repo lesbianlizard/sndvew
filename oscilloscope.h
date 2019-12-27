@@ -59,7 +59,7 @@ class Oscilloscope: TextureGraph {
 			"void main() {\n"
 
 			// "  gl_FragColor = vec4(vec3(.3), 1.0);\n"
-			"	float ampl = texture2D(audio_data, v_texCoord).r;\n"
+			"	float ampl = (texture2D(audio_data, v_texCoord).r*1.8) -0.4;\n"
 			// "	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, v_texCoord.y)).r * .5;\n"
 			// "  gl_FragColor = vec4(texture2D(gradient, vec2(ampl, 1.0)));\n"
 			" vec3 color = vec3(0,0,0);\n"
