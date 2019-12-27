@@ -66,9 +66,9 @@ class Spectrograph : public TextureGraph {
 
 			"void main() {\n"
 
-			"	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0)/3.0)).r;\n"
+			"	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, pow(v_texCoord.y, 2.0)/8.0)).r;\n"
 			// "	float ampl = texture2D(audio_data, vec2(v_texCoord.x + x_offset, v_texCoord.y)).r * .5;\n"
-			"  gl_FragColor = vec4(texture2D(gradient, vec2(ampl, 1.0)));\n"
+			"  gl_FragColor = vec4(texture2D(gradient, vec2(log(ampl*10.0)*3.0, 1.0)));\n"
 			// "  gl_FragColor = vec4(vec3(ampl), 1.0);\n"
 			"}\n";
 

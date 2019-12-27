@@ -14,12 +14,12 @@
 #include <string.h>
 
 Spectrograph::Spectrograph() {
-	this->fft_samples = 1024;
+	this->fft_samples = 256;
 	this->fft_input_buffer = new double[fft_samples];
 	this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
 }
 Spectrograph::Spectrograph(glm::vec3 pos, glm::vec3 size) : TextureGraph(pos, size) {
-    this->fft_samples = 1024;
+    this->fft_samples = 256;
     this->fft_input_buffer = new double[fft_samples];
     this->fft_buffer = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * this->fft_samples*2);
 }

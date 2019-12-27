@@ -177,7 +177,7 @@ int main(int argc, char* argv[]) {
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    const int GAP = 10;
+    const int GAP = 3;
 
     Spectrograph spectro1(glm::vec3(0.0, 0.0, 0.0), glm::vec3(WIDTH/2 - GAP/2, HEIGHT/2, 1.0));
     spectro1.setup(&g::mic1, "gradient.png");
