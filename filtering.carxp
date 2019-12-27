@@ -10,6 +10,10 @@
   <UIBridgesTimeout>4000</UIBridgesTimeout>
  </EngineSettings>
 
+ <Transport>
+  <BeatsPerMinute>120</BeatsPerMinute>
+ </Transport>
+
  <!-- EQ4Q Stereo -->
  <Plugin>
   <Info>
@@ -97,7 +101,7 @@
     <Index>10</Index>
     <Name>Filter 4 Freq</Name>
     <Symbol>filter4_freq</Symbol>
-    <Value>1009.7548828125</Value>
+    <Value>986.774169921875</Value>
    </Parameter>
 
    <Parameter>
@@ -237,7 +241,7 @@
     <Index>7</Index>
     <Name>Ratio</Name>
     <Symbol>ratio</Symbol>
-    <Value>5.75484180450439</Value>
+    <Value>2.95409274101257</Value>
    </Parameter>
 
    <Parameter>
@@ -258,7 +262,7 @@
     <Index>10</Index>
     <Name>Makeup Gain</Name>
     <Symbol>makeup</Symbol>
-    <Value>5.45659112930298</Value>
+    <Value>10.439640045166</Value>
    </Parameter>
 
    <Parameter>
@@ -283,22 +287,283 @@
   </Data>
  </Plugin>
 
+ <!-- Calf Mono Compressor -->
+ <Plugin>
+  <Info>
+   <Type>LV2</Type>
+   <Name>Calf Mono Compressor (2)</Name>
+   <URI>http://calf.sourceforge.net/plugins/MonoCompressor</URI>
+  </Info>
+
+  <Data>
+   <Active>Yes</Active>
+   <ControlChannel>1</ControlChannel>
+   <Options>0x1e3</Options>
+
+   <Parameter>
+    <Index>0</Index>
+    <Name>Bypass</Name>
+    <Symbol>bypass</Symbol>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>1</Index>
+    <Name>Input</Name>
+    <Symbol>level_in</Symbol>
+    <Value>1</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>6</Index>
+    <Name>Threshold</Name>
+    <Symbol>threshold</Symbol>
+    <Value>0.0174576137214899</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>7</Index>
+    <Name>Ratio</Name>
+    <Symbol>ratio</Symbol>
+    <Value>2.95409274101257</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>8</Index>
+    <Name>Attack</Name>
+    <Symbol>attack</Symbol>
+    <Value>0.594748497009277</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>9</Index>
+    <Name>Release</Name>
+    <Symbol>release</Symbol>
+    <Value>250</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>10</Index>
+    <Name>Makeup Gain</Name>
+    <Symbol>makeup</Symbol>
+    <Value>10.439640045166</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>11</Index>
+    <Name>Knee</Name>
+    <Symbol>knee</Symbol>
+    <Value>2.82842993736267</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>13</Index>
+    <Name>Mix</Name>
+    <Symbol>mix</Symbol>
+    <Value>1</Value>
+   </Parameter>
+
+   <CustomData>
+    <Type>http://kxstudio.sf.net/ns/carla/property</Type>
+    <Key>CarlaSkinIsCompacted</Key>
+    <Value>false</Value>
+   </CustomData>
+  </Data>
+ </Plugin>
+
+ <!-- EQ1Q Mono -->
+ <Plugin>
+  <Info>
+   <Type>LV2</Type>
+   <Name>EQ1Q Mono</Name>
+   <URI>http://eq10q.sourceforge.net/eq/eq1qm</URI>
+  </Info>
+
+  <Data>
+   <Active>Yes</Active>
+   <ControlChannel>1</ControlChannel>
+   <Options>0x2</Options>
+
+   <Parameter>
+    <Index>0</Index>
+    <Name>Bypass</Name>
+    <Symbol>bypass</Symbol>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>1</Index>
+    <Name>Input Gain</Name>
+    <Symbol>input_gain</Symbol>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>2</Index>
+    <Name>Output Gain</Name>
+    <Symbol>output_gain</Symbol>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>3</Index>
+    <Name>Filter 1 Gain</Name>
+    <Symbol>filter1_gain</Symbol>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>4</Index>
+    <Name>Filter 1 Freq</Name>
+    <Symbol>filter1_freq</Symbol>
+    <Value>119.328987121582</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>5</Index>
+    <Name>Filter 1 Q</Name>
+    <Symbol>filter1_q</Symbol>
+    <Value>0.699999988079071</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>6</Index>
+    <Name>Filter 1 Type</Name>
+    <Symbol>filter1_type</Symbol>
+    <Value>2</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>7</Index>
+    <Name>Filter 1 Enable</Name>
+    <Symbol>filter1_enable</Symbol>
+    <Value>1</Value>
+   </Parameter>
+  </Data>
+ </Plugin>
+
+ <!-- EQ1Q Mono -->
+ <Plugin>
+  <Info>
+   <Type>LV2</Type>
+   <Name>EQ1Q Mono (2)</Name>
+   <URI>http://eq10q.sourceforge.net/eq/eq1qm</URI>
+  </Info>
+
+  <Data>
+   <Active>Yes</Active>
+   <ControlChannel>1</ControlChannel>
+   <Options>0x2</Options>
+
+   <Parameter>
+    <Index>0</Index>
+    <Name>Bypass</Name>
+    <Symbol>bypass</Symbol>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>1</Index>
+    <Name>Input Gain</Name>
+    <Symbol>input_gain</Symbol>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>2</Index>
+    <Name>Output Gain</Name>
+    <Symbol>output_gain</Symbol>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>3</Index>
+    <Name>Filter 1 Gain</Name>
+    <Symbol>filter1_gain</Symbol>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>4</Index>
+    <Name>Filter 1 Freq</Name>
+    <Symbol>filter1_freq</Symbol>
+    <Value>1000</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>5</Index>
+    <Name>Filter 1 Q</Name>
+    <Symbol>filter1_q</Symbol>
+    <Value>0.699999988079071</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>6</Index>
+    <Name>Filter 1 Type</Name>
+    <Symbol>filter1_type</Symbol>
+    <Value>6</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>7</Index>
+    <Name>Filter 1 Enable</Name>
+    <Symbol>filter1_enable</Symbol>
+    <Value>1</Value>
+   </Parameter>
+  </Data>
+ </Plugin>
+
+ <Patchbay>
+  <Connection>
+   <Source>Audio Input:Left</Source>
+   <Target>EQ4Q Stereo:Input1</Target>
+  </Connection>
+  <Connection>
+   <Source>Audio Input:Right</Source>
+   <Target>EQ4Q Stereo:Input2</Target>
+  </Connection>
+  <Connection>
+   <Source>Calf Mono Compressor (2):Out L</Source>
+   <Target>Audio Output:Left</Target>
+  </Connection>
+  <Connection>
+   <Source>Calf Mono Compressor:Out L</Source>
+   <Target>Audio Output:Right</Target>
+  </Connection>
+  <Connection>
+   <Source>EQ4Q Stereo:Output1</Source>
+   <Target>EQ1Q Mono:Input</Target>
+  </Connection>
+  <Connection>
+   <Source>EQ1Q Mono:Output</Source>
+   <Target>Calf Mono Compressor (2):In L</Target>
+  </Connection>
+  <Connection>
+   <Source>EQ4Q Stereo:Output2</Source>
+   <Target>EQ1Q Mono (2):Input</Target>
+  </Connection>
+  <Connection>
+   <Source>EQ1Q Mono (2):Output</Source>
+   <Target>Calf Mono Compressor:In L</Target>
+  </Connection>
+ </Patchbay>
+
  <ExternalPatchbay>
   <Connection>
-   <Source>mpv:out_0</Source>
+   <Source>system:capture_1</Source>
    <Target>Carla:audio-in1</Target>
   </Connection>
   <Connection>
-   <Source>mpv:out_1</Source>
+   <Source>system:capture_2</Source>
    <Target>Carla:audio-in2</Target>
   </Connection>
   <Connection>
    <Source>Carla:audio-out1</Source>
-   <Target>system:playback_1</Target>
+   <Target>sndvew:mic1</Target>
   </Connection>
   <Connection>
    <Source>Carla:audio-out2</Source>
-   <Target>system:playback_2</Target>
+   <Target>sndvew:mic2</Target>
   </Connection>
  </ExternalPatchbay>
 </CARLA-PROJECT>
