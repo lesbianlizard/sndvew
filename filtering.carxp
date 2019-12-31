@@ -80,28 +80,28 @@
     <Index>7</Index>
     <Name>Filter 1 Freq</Name>
     <Symbol>filter1_freq</Symbol>
-    <Value>25.1778011322021</Value>
+    <Value>51.5682907104492</Value>
    </Parameter>
 
    <Parameter>
     <Index>8</Index>
     <Name>Filter 2 Freq</Name>
     <Symbol>filter2_freq</Symbol>
-    <Value>164.386611938477</Value>
+    <Value>1478.54858398438</Value>
    </Parameter>
 
    <Parameter>
     <Index>9</Index>
     <Name>Filter 3 Freq</Name>
     <Symbol>filter3_freq</Symbol>
-    <Value>404.323333740234</Value>
+    <Value>1456.16577148438</Value>
    </Parameter>
 
    <Parameter>
     <Index>10</Index>
     <Name>Filter 4 Freq</Name>
     <Symbol>filter4_freq</Symbol>
-    <Value>986.774169921875</Value>
+    <Value>1456.16577148438</Value>
    </Parameter>
 
    <Parameter>
@@ -115,14 +115,14 @@
     <Index>12</Index>
     <Name>Filter 2 Q</Name>
     <Symbol>filter2_q</Symbol>
-    <Value>4.23423719406128</Value>
+    <Value>0.699999988079071</Value>
    </Parameter>
 
    <Parameter>
     <Index>13</Index>
     <Name>Filter 3 Q</Name>
     <Symbol>filter3_q</Symbol>
-    <Value>4.88705778121948</Value>
+    <Value>0.699999988079071</Value>
    </Parameter>
 
    <Parameter>
@@ -143,14 +143,14 @@
     <Index>16</Index>
     <Name>Filter 2 Type</Name>
     <Symbol>filter2_type</Symbol>
-    <Value>12</Value>
+    <Value>4</Value>
    </Parameter>
 
    <Parameter>
     <Index>17</Index>
     <Name>Filter 3 Type</Name>
     <Symbol>filter3_type</Symbol>
-    <Value>12</Value>
+    <Value>4</Value>
    </Parameter>
 
    <Parameter>
@@ -416,7 +416,7 @@
     <Index>4</Index>
     <Name>Filter 1 Freq</Name>
     <Symbol>filter1_freq</Symbol>
-    <Value>119.328987121582</Value>
+    <Value>357.874298095703</Value>
    </Parameter>
 
    <Parameter>
@@ -430,7 +430,7 @@
     <Index>6</Index>
     <Name>Filter 1 Type</Name>
     <Symbol>filter1_type</Symbol>
-    <Value>2</Value>
+    <Value>4</Value>
    </Parameter>
 
    <Parameter>
@@ -473,7 +473,7 @@
     <Index>2</Index>
     <Name>Output Gain</Name>
     <Symbol>output_gain</Symbol>
-    <Value>0</Value>
+    <Value>10.2399997711182</Value>
    </Parameter>
 
    <Parameter>
@@ -487,7 +487,7 @@
     <Index>4</Index>
     <Name>Filter 1 Freq</Name>
     <Symbol>filter1_freq</Symbol>
-    <Value>1000</Value>
+    <Value>392.174407958984</Value>
    </Parameter>
 
    <Parameter>
@@ -501,7 +501,7 @@
     <Index>6</Index>
     <Name>Filter 1 Type</Name>
     <Symbol>filter1_type</Symbol>
-    <Value>6</Value>
+    <Value>8</Value>
    </Parameter>
 
    <Parameter>
@@ -509,6 +509,47 @@
     <Name>Filter 1 Enable</Name>
     <Symbol>filter1_enable</Symbol>
     <Value>1</Value>
+   </Parameter>
+  </Data>
+ </Plugin>
+
+ <!-- C* Noisegate - Attenuating hum and noise -->
+ <Plugin>
+  <Info>
+   <Type>LADSPA</Type>
+   <Name>C* Noisegate - Attenuating hum and noise</Name>
+   <Binary>/usr/lib/ladspa/caps.so</Binary>
+   <Label>Noisegate</Label>
+   <UniqueID>2602</UniqueID>
+  </Info>
+
+  <Data>
+   <Active>Yes</Active>
+   <ControlChannel>1</ControlChannel>
+   <Options>0x2</Options>
+
+   <Parameter>
+    <Index>0</Index>
+    <Name>open</Name>
+    <Value>-28.9336490631104</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>1</Index>
+    <Name>attack</Name>
+    <Value>0</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>2</Index>
+    <Name>close</Name>
+    <Value>-65.5999984741211</Value>
+   </Parameter>
+
+   <Parameter>
+    <Index>3</Index>
+    <Name>mains</Name>
+    <Value>60</Value>
    </Parameter>
   </Data>
  </Plugin>
@@ -523,46 +564,90 @@
    <Target>EQ4Q Stereo:Input2</Target>
   </Connection>
   <Connection>
-   <Source>Calf Mono Compressor (2):Out L</Source>
-   <Target>Audio Output:Left</Target>
-  </Connection>
-  <Connection>
    <Source>Calf Mono Compressor:Out L</Source>
    <Target>Audio Output:Right</Target>
   </Connection>
   <Connection>
-   <Source>EQ4Q Stereo:Output1</Source>
-   <Target>EQ1Q Mono:Input</Target>
+   <Source>Calf Mono Compressor (2):Out L</Source>
+   <Target>Audio Output:Left</Target>
   </Connection>
   <Connection>
    <Source>EQ1Q Mono:Output</Source>
    <Target>Calf Mono Compressor (2):In L</Target>
   </Connection>
   <Connection>
-   <Source>EQ4Q Stereo:Output2</Source>
-   <Target>EQ1Q Mono (2):Input</Target>
-  </Connection>
-  <Connection>
    <Source>EQ1Q Mono (2):Output</Source>
    <Target>Calf Mono Compressor:In L</Target>
+  </Connection>
+  <Connection>
+   <Source>EQ4Q Stereo:Output1</Source>
+   <Target>C* Noisegate - Attenuating hum and noise:in</Target>
+  </Connection>
+  <Connection>
+   <Source>C* Noisegate - Attenuating hum and noise:out</Source>
+   <Target>EQ1Q Mono:Input</Target>
+  </Connection>
+  <Connection>
+   <Source>EQ4Q Stereo:Output2</Source>
+   <Target>C* Noisegate - Attenuating hum and noise:in_2</Target>
+  </Connection>
+  <Connection>
+   <Source>C* Noisegate - Attenuating hum and noise:out_2</Source>
+   <Target>EQ1Q Mono (2):Input</Target>
   </Connection>
  </Patchbay>
 
  <ExternalPatchbay>
   <Connection>
-   <Source>system:capture_1</Source>
+   <Source>PulseAudio JACK Sink:front-left</Source>
+   <Target>system:playback_1</Target>
+  </Connection>
+  <Connection>
+   <Source>PulseAudio JACK Sink:front-left</Source>
+   <Target>dmx_lights:audio_in</Target>
+  </Connection>
+  <Connection>
+   <Source>PulseAudio JACK Sink:front-right</Source>
+   <Target>system:playback_2</Target>
+  </Connection>
+  <Connection>
+   <Source>mpv:out_0</Source>
+   <Target>Carla-01:audio-in1</Target>
+  </Connection>
+  <Connection>
+   <Source>mpv:out_1</Source>
+   <Target>Carla-01:audio-in2</Target>
+  </Connection>
+  <Connection>
+   <Source>pulse_sink_2:front-left</Source>
    <Target>Carla:audio-in1</Target>
   </Connection>
   <Connection>
-   <Source>system:capture_2</Source>
+   <Source>pulse_sink_2:front-right</Source>
    <Target>Carla:audio-in2</Target>
   </Connection>
   <Connection>
    <Source>Carla:audio-out1</Source>
-   <Target>sndvew:mic1</Target>
+   <Target>PulseAudio JACK Source:front-left</Target>
   </Connection>
   <Connection>
    <Source>Carla:audio-out2</Source>
+   <Target>PulseAudio JACK Source:front-right</Target>
+  </Connection>
+  <Connection>
+   <Source>Carla-01:audio-out1</Source>
+   <Target>system:playback_1</Target>
+  </Connection>
+  <Connection>
+   <Source>Carla-01:audio-out1</Source>
+   <Target>sndvew:mic1</Target>
+  </Connection>
+  <Connection>
+   <Source>Carla-01:audio-out2</Source>
+   <Target>system:playback_2</Target>
+  </Connection>
+  <Connection>
+   <Source>Carla-01:audio-out2</Source>
    <Target>sndvew:mic2</Target>
   </Connection>
  </ExternalPatchbay>
