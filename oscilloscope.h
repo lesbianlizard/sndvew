@@ -15,7 +15,7 @@ class Oscilloscope: TextureGraph {
 		void draw();
 
 	protected:
-		int sample_count = 512;
+		int sample_count = 1024;
 		GLuint texture;
 		GLuint gradient_tex;
 		GLuint shader;
