@@ -375,7 +375,7 @@
  <Plugin>
   <Info>
    <Type>LV2</Type>
-   <Name>EQ1Q Mono</Name>
+   <Name>EQ1Q Mono lp</Name>
    <URI>http://eq10q.sourceforge.net/eq/eq1qm</URI>
   </Info>
 
@@ -416,7 +416,7 @@
     <Index>4</Index>
     <Name>Filter 1 Freq</Name>
     <Symbol>filter1_freq</Symbol>
-    <Value>357.874298095703</Value>
+    <Value>194</Value>
    </Parameter>
 
    <Parameter>
@@ -446,7 +446,7 @@
  <Plugin>
   <Info>
    <Type>LV2</Type>
-   <Name>EQ1Q Mono (2)</Name>
+   <Name>EQ1Q Mono hp</Name>
    <URI>http://eq10q.sourceforge.net/eq/eq1qm</URI>
   </Info>
 
@@ -487,7 +487,7 @@
     <Index>4</Index>
     <Name>Filter 1 Freq</Name>
     <Symbol>filter1_freq</Symbol>
-    <Value>392.174407958984</Value>
+    <Value>1100</Value>
    </Parameter>
 
    <Parameter>
@@ -564,6 +564,14 @@
    <Target>EQ4Q Stereo:Input2</Target>
   </Connection>
   <Connection>
+   <Source>EQ4Q Stereo:Output1</Source>
+   <Target>C* Noisegate - Attenuating hum and noise:in</Target>
+  </Connection>
+  <Connection>
+   <Source>EQ4Q Stereo:Output2</Source>
+   <Target>C* Noisegate - Attenuating hum and noise:in_2</Target>
+  </Connection>
+  <Connection>
    <Source>Calf Mono Compressor:Out L</Source>
    <Target>Audio Output:Right</Target>
   </Connection>
@@ -572,82 +580,38 @@
    <Target>Audio Output:Left</Target>
   </Connection>
   <Connection>
-   <Source>EQ1Q Mono:Output</Source>
+   <Source>EQ1Q Mono lp:Output</Source>
    <Target>Calf Mono Compressor (2):In L</Target>
   </Connection>
   <Connection>
-   <Source>EQ1Q Mono (2):Output</Source>
+   <Source>EQ1Q Mono hp:Output</Source>
    <Target>Calf Mono Compressor:In L</Target>
   </Connection>
   <Connection>
-   <Source>EQ4Q Stereo:Output1</Source>
-   <Target>C* Noisegate - Attenuating hum and noise:in</Target>
-  </Connection>
-  <Connection>
    <Source>C* Noisegate - Attenuating hum and noise:out</Source>
-   <Target>EQ1Q Mono:Input</Target>
-  </Connection>
-  <Connection>
-   <Source>EQ4Q Stereo:Output2</Source>
-   <Target>C* Noisegate - Attenuating hum and noise:in_2</Target>
+   <Target>EQ1Q Mono lp:Input</Target>
   </Connection>
   <Connection>
    <Source>C* Noisegate - Attenuating hum and noise:out_2</Source>
-   <Target>EQ1Q Mono (2):Input</Target>
+   <Target>EQ1Q Mono hp:Input</Target>
   </Connection>
  </Patchbay>
 
  <ExternalPatchbay>
   <Connection>
-   <Source>PulseAudio JACK Sink:front-left</Source>
-   <Target>system:playback_1</Target>
-  </Connection>
-  <Connection>
-   <Source>PulseAudio JACK Sink:front-left</Source>
-   <Target>dmx_lights:audio_in</Target>
-  </Connection>
-  <Connection>
-   <Source>PulseAudio JACK Sink:front-right</Source>
-   <Target>system:playback_2</Target>
-  </Connection>
-  <Connection>
-   <Source>mpv:out_0</Source>
-   <Target>Carla-01:audio-in1</Target>
-  </Connection>
-  <Connection>
-   <Source>mpv:out_1</Source>
-   <Target>Carla-01:audio-in2</Target>
-  </Connection>
-  <Connection>
-   <Source>pulse_sink_2:front-left</Source>
+   <Source>system:capture_1</Source>
    <Target>Carla:audio-in1</Target>
   </Connection>
   <Connection>
-   <Source>pulse_sink_2:front-right</Source>
+   <Source>system:capture_2</Source>
    <Target>Carla:audio-in2</Target>
   </Connection>
   <Connection>
    <Source>Carla:audio-out1</Source>
-   <Target>PulseAudio JACK Source:front-left</Target>
-  </Connection>
-  <Connection>
-   <Source>Carla:audio-out2</Source>
-   <Target>PulseAudio JACK Source:front-right</Target>
-  </Connection>
-  <Connection>
-   <Source>Carla-01:audio-out1</Source>
-   <Target>system:playback_1</Target>
-  </Connection>
-  <Connection>
-   <Source>Carla-01:audio-out1</Source>
    <Target>sndvew:mic1</Target>
   </Connection>
   <Connection>
-   <Source>Carla-01:audio-out2</Source>
-   <Target>system:playback_2</Target>
-  </Connection>
-  <Connection>
-   <Source>Carla-01:audio-out2</Source>
+   <Source>Carla:audio-out2</Source>
    <Target>sndvew:mic2</Target>
   </Connection>
  </ExternalPatchbay>
